@@ -1,0 +1,10 @@
+{
+  "fmt": {
+    "lineWidth": 120,
+    "semiColons": true,
+    "singleQuote": true
+  },
+  "tasks": {
+    "start": "deno run bin/bouncer.ts"
+  }
+}
