@@ -2,6 +2,7 @@ import { parseArgs } from '@std/cli';
 import { resolve as resolvePath } from '@std/path';
 
 import { existsFile } from './utils.ts';
+import { parseConfig } from './config.ts';
 import { logger } from './logger.ts';
 
 export const run = async () => {
@@ -20,5 +21,7 @@ export const run = async () => {
     return false;
   }
 
-  console.log(args);
+  const config = await parseConfig(configFilePath);
+
+  return;
 };
