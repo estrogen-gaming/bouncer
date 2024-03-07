@@ -1,0 +1,61 @@
+{
+  "version": "3",
+  "packages": {
+    "specifiers": {
+      "jsr:@std/assert@^0.218.2": "jsr:@std/assert@0.218.2",
+      "jsr:@std/cli@^0.218.2": "jsr:@std/cli@0.218.2",
+      "jsr:@std/datetime@^0.218.2": "jsr:@std/datetime@0.218.2",
+      "jsr:@std/fmt@^0.218.2": "jsr:@std/fmt@0.218.2",
+      "jsr:@std/fs@^0.218.2": "jsr:@std/fs@0.218.2",
+      "jsr:@std/log@^0.218.2": "jsr:@std/log@0.218.2",
+      "jsr:@std/path@^0.218.2": "jsr:@std/path@0.218.2"
+    },
+    "jsr": {
+      "@std/assert@0.218.2": {
+        "integrity": "7f0a5a1a8cf86607cd6c2c030584096e1ffad27fc9271429a8cb48cfbdee5eaf"
+      },
+      "@std/cli@0.218.2": {
+        "integrity": "7877f41b4369f51b2ee06132b678ceee703051671c0fcea9058c1c0242652098",
+        "dependencies": [
+          "jsr:@std/assert@^0.218.2"
+        ]
+      },
+      "@std/datetime@0.218.2": {
+        "integrity": "6279f219fd2db40891f804d0f6d2802ddc2e76afe85e938bea897b6723f4c242"
+      },
+      "@std/fmt@0.218.2": {
+        "integrity": "99526449d2505aa758b6cbef81e7dd471d8b28ec0dcb1491d122b284c548788a"
+      },
+      "@std/fs@0.218.2": {
+        "integrity": "dd9431453f7282e8c577cc22c9e6d036055a9a980b5549f887d6012969fabcca"
+      },
+      "@std/log@0.218.2": {
+        "integrity": "0e21789e8c918961a9997f9659f53ef490857f6ed543961d04501e6ba9f2e373",
+        "dependencies": [
+          "jsr:@std/assert@^0.218.2",
+          "jsr:@std/fmt@^0.218.2",
+          "jsr:@std/fs@^0.218.2"
+        ]
+      },
+      "@std/path@0.218.2": {
+        "integrity": "b568fd923d9e53ad76d17c513e7310bda8e755a3e825e6289a0ce536404e2662",
+        "dependencies": [
+          "jsr:@std/assert@^0.218.2"
+        ]
+      }
+    }
+  },
+  "remote": {
+    "https://deno.land/std@0.218.2/fmt/colors.ts": "d239d84620b921ea520125d778947881f62c50e78deef2657073840b8af9559a"
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@std/cli@^0.218.2",
+      "jsr:@std/datetime@^0.218.2",
+      "jsr:@std/log@^0.218.2",
+      "jsr:@std/path@^0.218.2",
+      "jsr:@std/yaml@^0.218.2",
+      "npm:superstruct@^1.0.3"
+    ]
+  }
+}

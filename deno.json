@@ -5,6 +5,15 @@
     "singleQuote": true
   },
   "tasks": {
-    "start": "deno run bin/bouncer.ts"
+    "start": "deno run --allow-env=CONFIG_FILE,DEBUG --allow-read bin/bouncer.ts"
+  },
+  "imports": {
+    "@std/cli": "jsr:@std/cli@^0.218.2",
+    "@std/datetime": "jsr:@std/datetime@^0.218.2",
+    "@std/fmt/colors": "https://deno.land/std@0.218.2/fmt/colors.ts",
+    "@std/log": "jsr:@std/log@^0.218.2",
+    "@std/path": "jsr:@std/path@^0.218.2",
+    "@std/yaml": "jsr:@std/yaml@^0.218.2",
+    "@npm/superstruct": "npm:superstruct@^1.0.3"
   }
 }
