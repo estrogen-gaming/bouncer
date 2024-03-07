@@ -1,23 +1,15 @@
-import { bigint, defaulted, type Describe, object, string } from '@npm/superstruct';
-
-export interface Config {
-  // Database file location
-  database: string;
-  // Server ID to operate in
-  server: bigint;
-}
+import { number, object, string, ZodError } from '@x/zod';
+import { fromZodError } from '@npm/zod-validation-error';
 
 export const ConfigSchema = object({
-  database: defaulted(string(), 'data/db'),
-  server: bigint(),
-}) satisfies Describe<Config>;
+  database: string().default('data/db'),
+  server: number(),
+});
 
-export const verifyConfig = (config: unknown) => {
-  const result = ConfigSchema.validate(config);
-
-  if (result?.[0]) {
-    throw result[0];
+export const validateConfig = (config: unknown) => {
+  try {
+    return ConfigSchema.parse(config);
+  } catch (error) {
+    throw fromZodError(error);
   }
-
-  return result[1];
 };

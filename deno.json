@@ -8,12 +8,13 @@
     "start": "deno run --allow-env=CONFIG_FILE,DEBUG --allow-read bin/bouncer.ts"
   },
   "imports": {
+    "@npm/zod-validation-error": "npm:zod-validation-error@^3.0.3",
     "@std/cli": "jsr:@std/cli@^0.218.2",
     "@std/datetime": "jsr:@std/datetime@^0.218.2",
     "@std/fmt/colors": "https://deno.land/std@0.218.2/fmt/colors.ts",
     "@std/log": "jsr:@std/log@^0.218.2",
     "@std/path": "jsr:@std/path@^0.218.2",
     "@std/yaml": "jsr:@std/yaml@^0.218.2",
-    "@npm/superstruct": "npm:superstruct@^1.0.3"
+    "@x/zod": "https://deno.land/x/zod@v3.22.4/mod.ts"
   }
 }
