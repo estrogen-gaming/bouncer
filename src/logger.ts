@@ -1,6 +1,6 @@
 import * as log from '@std/log';
 import { format as formatDate } from '@std/datetime';
-import { blue, green, red, reset, yellow } from '@std/fmt/colors';
+import { blue, gray, green, red, reset, yellow } from '@std/fmt/colors';
 
 const LevelNames = {
   INFO: `  INFO `,
@@ -19,7 +19,7 @@ const formatter: log.FormatterFunction = (record) => {
   levelName = levelName.padEnd(maxLevelNameLength);
 
   let levelColour;
-  switch (record.levelName) {
+  switch (record.levelName as keyof typeof LevelNames) {
     case 'INFO':
       levelColour = blue;
       break;
@@ -29,8 +29,9 @@ const formatter: log.FormatterFunction = (record) => {
     case 'ERROR':
       levelColour = red;
       break;
-    default:
-      levelColour = reset;
+    case 'DEBUG':
+      levelColour = gray;
+      break;
   }
 
   return `${green(`[${formatDate(new Date(), 'yyyy/MM/dd hh:mm:ss a')}]`)} ${
