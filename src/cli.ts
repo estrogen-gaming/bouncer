@@ -1,7 +1,7 @@
 import { parseArgs } from '@std/cli';
 import { resolve as resolvePath } from '@std/path';
 
-import { existsFile } from './utils.ts';
+import { existsPath } from './utils.ts';
 import { parseConfig } from './config.ts';
 import { logger } from './logger.ts';
 
@@ -17,7 +17,7 @@ export const run = async () => {
       'config.yaml',
   );
 
-  if (!await existsFile(configFilePath)) {
+  if (!await existsPath(configFilePath)) {
     log.error('Configuration file could not be found.');
     return false;
   }

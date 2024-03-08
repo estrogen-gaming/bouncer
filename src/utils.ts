@@ -1,4 +1,4 @@
-export const existsFile = async (path: string) => {
+export const existsPath = async (path: string) => {
   try {
     await Deno.stat(path);
 

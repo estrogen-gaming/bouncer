@@ -10,8 +10,8 @@ const LevelNames = {
 };
 
 //* We can hardcode the max length of the level name,
-//* but it would be better to calculate it dynamically in case
-//* of changes.
+//* but it would be better to calculate it dynamically
+//* in case of changes.
 const maxLevelNameLength = Math.max(...Object.values(LevelNames).map((name) => name.length));
 
 const formatter: log.FormatterFunction = (record) => {
