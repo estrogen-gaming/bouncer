@@ -10,6 +10,7 @@ export const run = async () => {
     string: ['config'],
     alias: { c: 'config' },
   });
+  let log = await logger();
 
   let configFilePath = resolvePath(
     (args.config ? args.config : Deno.env.get('CONFIG_FILE')) ??
@@ -17,11 +18,14 @@ export const run = async () => {
   );
 
   if (!await existsFile(configFilePath)) {
-    logger.error('Configuration file could not be found.');
+    log.error('Configuration file could not be found.');
     return false;
   }
 
   const config = await parseConfig(configFilePath);
+  log = await logger(config.logFolder);
+
+  log.error('Not implemented yet.');
 
   return;
 };

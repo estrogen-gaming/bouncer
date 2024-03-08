@@ -5,6 +5,7 @@ import { fromZodError } from '@npm/zod-validation-error';
 
 export const ConfigSchema = object({
   database: string().default('data/db'),
+  logFolder: string().optional(),
   server: number(),
 });
 

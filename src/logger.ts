@@ -39,13 +39,12 @@ const formatter: log.FormatterFunction = (record) => {
   } ${record.msg}`;
 };
 
-log.setup({
-  // TODO: Add file handlers.
-  handlers: {
+export const logger = async (logFolder?: string) => {
+  const handlers: Record<string, log.BaseHandler> = {
     consoleHandler: new log.ConsoleHandler('NOTSET', { formatter, useColors: false }),
     debugHandler: new log.ConsoleHandler('DEBUG', { formatter, useColors: false }),
-  },
-  loggers: {
+  };
+  const loggers = {
     default: {
       handlers: ['consoleHandler'],
     },
@@ -53,7 +52,26 @@ log.setup({
       level: 'DEBUG',
       handlers: Deno.env.get('DEBUG') ? ['debugHandler'] : undefined,
     },
-  },
-});
+  } satisfies Record<string, log.LoggerConfig>;
 
-export const logger = Deno.env.get('DEBUG') ? log.getLogger('debug') : log.getLogger();
+  if (logFolder) {
+    handlers.consoleFileHandler = new log.RotatingFileHandler('NOTSET', {
+      filename: `${logFolder}/bouncer.log`,
+      maxBackupCount: 5,
+      maxBytes: 2 * 1024 * 1024,
+      formatter,
+    });
+
+    loggers.default.handlers.push('consoleFileHandler');
+    loggers.debug.handlers?.push('consoleFileHandler');
+
+    await Deno.mkdir(logFolder, { recursive: true });
+  }
+
+  log.setup({
+    handlers,
+    loggers,
+  });
+
+  return Deno.env.get('DEBUG') ? log.getLogger('debug') : log.getLogger();
+};

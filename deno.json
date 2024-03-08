@@ -5,7 +5,7 @@
     "singleQuote": true
   },
   "tasks": {
-    "start": "deno run --allow-env=CONFIG_FILE,DEBUG --allow-read bin/bouncer.ts"
+    "start": "deno run --allow-env=CONFIG_FILE,DEBUG --allow-read --allow-write bin/bouncer.ts"
   },
   "imports": {
     "@npm/zod-validation-error": "npm:zod-validation-error@^3.0.3",
