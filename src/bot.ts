@@ -14,10 +14,6 @@ export class Bot extends Client {
     this.token = config.token;
     this.server = config.server;
   }
-
-  async login(token = this.token) {
-    return super.login(token!);
-  }
 }
 
 export const startBot = async (config: DiscordConfig, logger: Logger) => {
