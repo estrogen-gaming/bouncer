@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    paths:
+      - .github/workflows/ci.yaml
+      - bin/**
+      - src/**
+      - deno.{json,lock}
+  pull_request:
+    paths:
+      - .github/workflows/ci.yaml
+      - bin/**
+      - src/**
+      - deno.{json,lock}
+
+jobs:
+  ci:
+    name: Check Lint and Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: 1.x
+
+      - name: Check types
+        run: deno check bin/bouncer.ts
+
+      - name: Check lint
+        run: deno lint
+
+      - name: Check formatting
+        run: deno fmt --check
