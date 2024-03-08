@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits } from '@npm/discord.js';
+import { ChannelType, Client, Events, GatewayIntentBits, Partials } from '@npm/discord.js';
 import { Logger } from '@std/log';
 
 import { DiscordConfig } from './config.ts';
@@ -8,7 +8,7 @@ export class Bot extends Client {
 
   constructor(config: DiscordConfig) {
     super({
-      intents: [GatewayIntentBits.Guilds],
+      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
     });
 
     this.token = config.token;
@@ -23,5 +23,10 @@ export const startBot = async (config: DiscordConfig, logger: Logger) => {
 
   bot.once(Events.ClientReady, (ready) => {
     logger.info(`Connected to Discord as ${ready.user.username}`);
+  });
+
+  bot.on(Events.MessageCreate, (message) => {
+    if (message.channel.type !== ChannelType.GuildText || message.author.bot) return;
+    if (!message.channel.nsfw) return;
   });
 };

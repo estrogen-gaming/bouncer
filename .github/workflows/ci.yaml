@@ -16,7 +16,7 @@ on:
 
 jobs:
   ci:
-    name: Check Lint and Formatting
+    name: Check Types, Lint and Formatting
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
