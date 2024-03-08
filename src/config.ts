@@ -11,6 +11,7 @@ export const DiscordConfigRolesSchema = object({
 export const DiscordConfigSchema = object({
   token: string(),
   server: string(),
+  interviewsCategory: string(),
   roles: DiscordConfigRolesSchema,
 });
 
