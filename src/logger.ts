@@ -1,6 +1,6 @@
 import * as log from '@std/log';
 import { format as formatDate } from '@std/datetime';
-import { blue, gray, green, red, reset, yellow } from '@std/fmt/colors';
+import { blue, gray, green, red, yellow } from '@std/fmt/colors';
 
 const LevelNames = {
   INFO: `  INFO `,

@@ -13,7 +13,7 @@ export const runCLI = async () => {
   });
   let logger = await customLogger();
 
-  let configFilePath = resolvePath(
+  const configFilePath = resolvePath(
     (args.config ? args.config : Deno.env.get('CONFIG_FILE')) ??
       'config.yaml',
   );
