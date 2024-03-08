@@ -6,7 +6,10 @@ import { fromZodError } from '@npm/zod-validation-error';
 export const ConfigSchema = object({
   database: string().default('data/db'),
   logFolder: string().optional(),
-  server: number(),
+  discord: object({
+    token: string(),
+    server: string(),
+  }),
 });
 
 export const parseConfig = async (path: string) => {
