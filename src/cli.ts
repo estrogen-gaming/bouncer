@@ -23,7 +23,10 @@ export const run = async () => {
   }
 
   const config = await parseConfig(configFilePath);
-  log = await logger(config.logFolder);
+
+  if (config.logFolder) {
+    log = await logger(config.logFolder);
+  }
 
   log.error('Not implemented yet.');
 
