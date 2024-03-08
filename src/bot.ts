@@ -1,4 +1,4 @@
-import { ChannelType, Client, Events, GatewayIntentBits, Partials } from '@npm/discord.js';
+import { ChannelType, Client, Events, GatewayIntentBits } from '@npm/discord.js';
 import { Logger } from '@std/log';
 
 import { DiscordConfig } from './config.ts';
