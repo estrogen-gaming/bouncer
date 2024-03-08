@@ -1,11 +1,17 @@
 import * as YAML from '@std/yaml';
 
-import { input, number, object, string, ZodError } from '@x/zod';
+import { input, object, string, ZodError } from '@x/zod';
 import { fromZodError } from '@npm/zod-validation-error';
+
+export const DiscordConfigRolesSchema = object({
+  nsfwAccess: string(),
+  nsfwVerified: string(),
+});
 
 export const DiscordConfigSchema = object({
   token: string(),
-  server: number(),
+  server: string(),
+  roles: DiscordConfigRolesSchema,
 });
 
 export const ConfigSchema = object({
@@ -14,6 +20,7 @@ export const ConfigSchema = object({
   discord: DiscordConfigSchema,
 });
 
+export type DiscordConfigRoles = input<typeof DiscordConfigRolesSchema>;
 export type DiscordConfig = input<typeof DiscordConfigSchema>;
 export type Config = input<typeof ConfigSchema>;
 

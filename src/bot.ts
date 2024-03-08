@@ -1,10 +1,11 @@
 import { ChannelType, Client, Events, GatewayIntentBits } from '@npm/discord.js';
 import { Logger } from '@std/log';
 
-import { DiscordConfig } from './config.ts';
+import { DiscordConfig, DiscordConfigRoles } from './config.ts';
 
 export class Bot extends Client {
-  server: number;
+  server: string;
+  roles: DiscordConfigRoles;
 
   constructor(config: DiscordConfig) {
     super({
@@ -13,12 +14,12 @@ export class Bot extends Client {
 
     this.token = config.token;
     this.server = config.server;
+    this.roles = config.roles;
   }
 }
 
 export const startBot = async (config: DiscordConfig, logger: Logger) => {
   const bot = new Bot(config);
-
   await bot.login();
 
   bot.once(Events.ClientReady, (ready) => {
@@ -26,7 +27,16 @@ export const startBot = async (config: DiscordConfig, logger: Logger) => {
   });
 
   bot.on(Events.MessageCreate, (message) => {
-    if (message.channel.type !== ChannelType.GuildText || message.author.bot) return;
-    if (!message.channel.nsfw) return;
+    if (
+      message.guildId !== bot.server ||
+      message.channel.type !== ChannelType.GuildText ||
+      message.author.bot || !message.channel.nsfw
+    ) return;
+
+    if (message.member?.roles.cache.hasAny(bot.roles.nsfwAccess, bot.roles.nsfwVerified)) {
+      return;
+    } else {
+      message.reply("You're not verified.");
+    }
   });
 };
