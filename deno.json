@@ -5,9 +5,10 @@
     "singleQuote": true
   },
   "tasks": {
-    "start": "deno run --allow-env=CONFIG_FILE,DEBUG --allow-read --allow-write bin/bouncer.ts"
+    "start": "deno run --allow-env --allow-net --allow-read --allow-write bin/bouncer.ts"
   },
   "imports": {
+    "@npm/discord.js": "npm:discord.js@^14.14.1",
     "@npm/zod-validation-error": "npm:zod-validation-error@^3.0.3",
     "@std/cli": "jsr:@std/cli@^0.218.2",
     "@std/datetime": "jsr:@std/datetime@^0.218.2",

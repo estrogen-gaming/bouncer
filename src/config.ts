@@ -1,16 +1,21 @@
 import * as YAML from '@std/yaml';
 
-import { number, object, string, ZodError } from '@x/zod';
+import { input, number, object, string, ZodError } from '@x/zod';
 import { fromZodError } from '@npm/zod-validation-error';
+
+export const DiscordConfigSchema = object({
+  token: string(),
+  server: number(),
+});
 
 export const ConfigSchema = object({
   database: string().default('data/db'),
   logFolder: string().optional(),
-  discord: object({
-    token: string(),
-    server: string(),
-  }),
+  discord: DiscordConfigSchema,
 });
+
+export type DiscordConfig = input<typeof DiscordConfigSchema>;
+export type Config = input<typeof ConfigSchema>;
 
 export const parseConfig = async (path: string) => {
   try {

@@ -3,14 +3,15 @@ import { resolve as resolvePath } from '@std/path';
 
 import { existsPath } from './utils.ts';
 import { parseConfig } from './config.ts';
-import { logger } from './logger.ts';
+import { customLogger } from './logger.ts';
+import { startBot } from './bot.ts';
 
 export const run = async () => {
   const args = parseArgs(Deno.args, {
     string: ['config'],
     alias: { c: 'config' },
   });
-  let log = await logger();
+  let logger = await customLogger();
 
   let configFilePath = resolvePath(
     (args.config ? args.config : Deno.env.get('CONFIG_FILE')) ??
@@ -18,17 +19,17 @@ export const run = async () => {
   );
 
   if (!await existsPath(configFilePath)) {
-    log.error('Configuration file could not be found.');
+    logger.error('Configuration file could not be found.');
     return false;
   }
 
   const config = await parseConfig(configFilePath);
 
   if (config.logFolder) {
-    log = await logger(config.logFolder);
+    logger = await customLogger(config.logFolder);
   }
 
-  log.error('Not implemented yet.');
+  await startBot(config.discord, logger);
 
   return;
 };

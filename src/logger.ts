@@ -39,7 +39,7 @@ const formatter: log.FormatterFunction = (record) => {
   } ${record.msg}`;
 };
 
-export const logger = async (logFolder?: string) => {
+export const customLogger = async (logFolder?: string) => {
   const handlers: Record<string, log.BaseHandler> = {
     consoleHandler: new log.ConsoleHandler('NOTSET', { formatter, useColors: false }),
     debugHandler: new log.ConsoleHandler('DEBUG', { formatter, useColors: false }),
