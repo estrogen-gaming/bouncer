@@ -6,7 +6,7 @@ import { parseConfig } from './config.ts';
 import { customLogger } from './logger.ts';
 import { startBot } from './bot.ts';
 
-export const run = async () => {
+export const runCLI = async () => {
   const args = parseArgs(Deno.args, {
     string: ['config'],
     alias: { c: 'config' },
