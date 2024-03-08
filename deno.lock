@@ -63,7 +63,6 @@
     }
   },
   "remote": {
-    "https://deno.land/std@0.218.2/fmt/colors.ts": "d239d84620b921ea520125d778947881f62c50e78deef2657073840b8af9559a",
     "https://deno.land/x/zod@v3.22.4/ZodError.ts": "4de18ff525e75a0315f2c12066b77b5c2ae18c7c15ef7df7e165d63536fdf2ea",
     "https://deno.land/x/zod@v3.22.4/errors.ts": "5285922d2be9700cc0c70c95e4858952b07ae193aa0224be3cbd5cd5567eabef",
     "https://deno.land/x/zod@v3.22.4/external.ts": "a6cfbd61e9e097d5f42f8a7ed6f92f93f51ff927d29c9fbaec04f03cbce130fe",
@@ -82,6 +81,7 @@
     "dependencies": [
       "jsr:@std/cli@^0.218.2",
       "jsr:@std/datetime@^0.218.2",
+      "jsr:@std/fmt@^0.218.2",
       "jsr:@std/log@^0.218.2",
       "jsr:@std/path@^0.218.2",
       "jsr:@std/yaml@^0.218.2",
