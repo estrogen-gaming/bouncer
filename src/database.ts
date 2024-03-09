@@ -8,6 +8,7 @@ export enum InterviewType {
 
 export interface Interview {
   interviewType: InterviewType;
+  channelId: string;
 }
 
 /**

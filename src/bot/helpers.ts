@@ -12,14 +12,35 @@ export const interviewUser = async (bot: BouncerBot, guild: Guild, member: Guild
   }
 
   removeUserAccess(bot, member);
-  await createInterviewChannel(bot, guild, member);
+  const createdChannel = await createInterviewChannel(bot, guild, member);
 
   await bot.database?.set(
     ['interviews', member.user.id],
     {
       interviewType: InterviewType.Text,
+      channelId: createdChannel.id,
     } satisfies Interview,
   );
+};
+
+export const endInterview = async (bot: BouncerBot, guild: Guild, member: GuildMember) => {
+  const existsInterview = await bot.database?.get(['interviews', member.user.id]);
+  if (!existsInterview?.value) {
+    bot.logger.warn(`User \`${member.user.id} (${member.user.globalName})\` is not in an interview. Ignoring...`);
+    return;
+  }
+
+  const interview = existsInterview.value as Interview;
+  const interviewChannel = guild.channels.cache.get(interview.channelId);
+  if (!interviewChannel) {
+    bot.logger.warn(
+      `Interview channel for user \`${member.user.id} (${member.user.globalName})\` not found. Ignoring...`,
+    );
+    return;
+  }
+
+  await interviewChannel.delete();
+  await bot.database?.delete(['interviews', member.user.id]);
 };
 
 /**
