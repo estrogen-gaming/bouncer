@@ -5,6 +5,8 @@ import { DiscordConfig, DiscordConfigRoles } from '../config.ts';
 import { createInterviewChannel, removeUserAccess } from './helpers.ts';
 
 export class Bot extends Client {
+  database: Deno.Kv | undefined;
+
   server: string;
   roles: DiscordConfigRoles;
   interviewsCategory: string;
@@ -22,9 +24,11 @@ export class Bot extends Client {
   }
 }
 
-export const startBot = async (config: DiscordConfig, logger: Logger) => {
+export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger: Logger) => {
   const bot = new Bot(config);
+
   await bot.login();
+  bot.database = database;
 
   bot.once(Events.ClientReady, (ready) => {
     logger.info(`Connected to Discord as ${ready.user.username}`);

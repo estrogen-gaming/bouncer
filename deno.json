@@ -5,8 +5,8 @@
     "singleQuote": true
   },
   "tasks": {
-    "start": "deno run --allow-env --allow-net --allow-read --allow-write bin/bouncer.ts",
-    "start:watch": "deno run --watch --allow-env --allow-net --allow-read --allow-write bin/bouncer.ts"
+    "start": "deno run --allow-env --allow-net --allow-read --allow-write --unstable-kv bin/bouncer.ts",
+    "start:watch": "deno run --watch --allow-env --allow-net --allow-read --allow-write --unstable-kv bin/bouncer.ts"
   },
   "imports": {
     "@npm/discord.js": "npm:discord.js@^14.14.1",

@@ -5,6 +5,7 @@ import { existsPath } from './utils.ts';
 import { parseConfig } from './config.ts';
 import { customLogger } from './logger.ts';
 import { startBot } from './bot/index.ts';
+import { setupDatabase } from './database.ts';
 
 export const runCLI = async () => {
   const args = parseArgs(Deno.args, {
@@ -29,7 +30,9 @@ export const runCLI = async () => {
     logger = await customLogger(config.logFolder);
   }
 
-  await startBot(config.discord, logger);
+  const database = await setupDatabase(config.database);
+
+  await startBot(database, config.discord, logger);
 
   return;
 };
