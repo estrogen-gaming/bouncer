@@ -3,6 +3,10 @@ import { parse as parseYAML } from '@std/yaml';
 import { input, object, string, ZodError } from '@x/zod';
 import { fromZodError } from '@npm/zod-validation-error';
 
+export const DiscordConfigChannelsSchema = object({
+  interviewFlagsId: string(),
+});
+
 export const DiscordConfigRolesSchema = object({
   pendingInterviewId: string(),
   nsfwAccessId: string(),
@@ -13,6 +17,7 @@ export const DiscordConfigSchema = object({
   token: string(),
   server: string(),
   interviewsCategoryId: string(),
+  channels: DiscordConfigChannelsSchema,
   roles: DiscordConfigRolesSchema,
 });
 

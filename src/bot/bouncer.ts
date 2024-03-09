@@ -15,7 +15,7 @@ export class BouncerBot extends Client {
     const { token, ...rest } = config;
 
     super({
-      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
+      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers],
     });
 
     this.token = token;

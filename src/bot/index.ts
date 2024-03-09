@@ -2,7 +2,7 @@ import { ChannelType, Events } from '@npm/discord.js';
 import { Logger } from '@std/log';
 
 import { DiscordConfig } from '../config.ts';
-import { interviewUser } from './helpers.ts';
+import { checkUserInterviewStatus } from './helpers.ts';
 import { BouncerBot } from './bouncer.ts';
 
 /**
@@ -37,6 +37,6 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
       return;
     }
 
-    await interviewUser(bot, guild, member);
+    await checkUserInterviewStatus(bot, guild, member);
   });
 };

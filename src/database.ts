@@ -6,7 +6,17 @@ export enum InterviewType {
   Id,
 }
 
-export interface Interview {
+export enum InterviewStatus {
+  ApprovedByText,
+  ApprovedById,
+  Unapproved,
+}
+
+export interface UserData {
+  interviewStatus: InterviewStatus;
+}
+
+export interface UserInterview {
   interviewType: InterviewType;
   channelId: string;
 }

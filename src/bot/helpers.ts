@@ -1,69 +1,118 @@
-import { type CategoryChannel, ChannelType, Guild, type GuildMember, PermissionFlagsBits } from '@npm/discord.js';
+import { ChannelType, Guild, type GuildMember, PermissionFlagsBits } from '@npm/discord.js';
 
 import { BouncerBot } from './bouncer.ts';
-import { InterviewType } from '../database.ts';
-import { Interview } from '../database.ts';
+import { DiscordAPIError } from '@npm/discord.js';
+import { UserData } from '../database.ts';
+import { InterviewStatus } from '../database.ts';
 
-export const interviewUser = async (bot: BouncerBot, guild: Guild, member: GuildMember) => {
-  const existsInterview = await bot.database?.get(['interviews', member.user.id]);
-  if (existsInterview?.value) {
-    bot.logger.warn(`User \`${member.user.id} (${member.user.globalName})\` is already in an interview. Ignoring...`);
+/**
+ * Check if user has been interviewed. If not, add them to the pending interview
+ * role and send a message to the interview flags channel.
+ *
+ * @param bot Bot instance.
+ * @param guild Current guild instance.
+ * @param member Event invoker member instance.
+ * @returns
+ */
+export const checkUserInterviewStatus = async (bot: BouncerBot, guild: Guild, member: GuildMember) => {
+  const existsUser = await bot.database?.get<UserData>(['users', member.user.id]);
+  if (existsUser?.value && existsUser.value.interviewStatus) {
+    bot.logger.warn(`User \`${member.user.id} (${member.user.globalName})\` has already been interviewed. Ignoring...`);
     return;
   }
 
-  removeUserAccess(bot, member);
-  const createdChannel = await createInterviewChannel(bot, guild, member);
+  await member.roles.add(bot.config.roles.pendingInterviewId)
+    .catch((error) => {
+      if (error instanceof DiscordAPIError && error.code === 50013) {
+        bot.logger.error(
+          `Bot does not have permission to add roles to user \`${member.user.id} (${member.user.globalName})\`.\nAre you sure bot's role is higher than the role you want to add?`,
+        );
+      } else {
+        bot.logger.error(`An unexpected error occurred in \`${checkUserInterviewStatus.name}\` function: ${error}`);
+      }
+
+      return;
+    });
+
+  // TODO: Create a function for ensuring that every
+  // configuration field exists and is the desired kind.
+  let interviewFlagsChannel = guild.channels.cache.get(bot.config.channels.interviewFlagsId);
+  if (!interviewFlagsChannel) {
+    bot.logger.error(
+      `Channel for \`interviewFlagsChannel\` with the id \`${bot.config.channels.interviewFlagsId}\` could not be found.`,
+    );
+
+    return;
+  }
+
+  if (interviewFlagsChannel.type !== ChannelType.GuildText) {
+    bot.logger.error(
+      `Channel for \`interviewFlagsChannel\` with the id \`${bot.config.channels.interviewFlagsId}\` is not a text channel.`,
+    );
+
+    return;
+  }
 
   await bot.database?.set(
-    ['interviews', member.user.id],
+    ['users', member.user.id],
     {
-      interviewType: InterviewType.Text,
-      channelId: createdChannel.id,
-    } satisfies Interview,
+      interviewStatus: InterviewStatus.Unapproved,
+    } satisfies UserData,
   );
+
+  // TODO: Mention the command instead of sending it directly.
+  interviewFlagsChannel.send(`${member} marked as pending interview. To interview them, use /interview command.`);
 };
 
 export const endInterview = async (bot: BouncerBot, guild: Guild, member: GuildMember) => {
-  const existsInterview = await bot.database?.get(['interviews', member.user.id]);
-  if (!existsInterview?.value) {
-    bot.logger.warn(`User \`${member.user.id} (${member.user.globalName})\` is not in an interview. Ignoring...`);
+  const existsUser = await bot.database?.get<UserData>(['users', member.user.id]);
+  if (!existsUser?.value || !existsUser.value.interviewStatus) {
+    bot.logger.warn(`User \`${member.user.id} (${member.user.globalName})\` has not been interviewed. Ignoring...`);
     return;
   }
 
-  const interview = existsInterview.value as Interview;
-  const interviewChannel = guild.channels.cache.get(interview.channelId);
-  if (!interviewChannel) {
-    bot.logger.warn(
-      `Interview channel for user \`${member.user.id} (${member.user.globalName})\` not found. Ignoring...`,
-    );
-    return;
-  }
+  await member.roles.remove(bot.config.roles.pendingInterviewId)
+    .catch((error) => {
+      if (error instanceof DiscordAPIError && error.code === 50013) {
+        bot.logger.error(
+          `Bot does not have permission to remove roles from user \`${member.user.id} (${member.user.globalName})\`.\nAre you sure bot's role is higher than the role you want to remove?`,
+        );
+      } else {
+        bot.logger.error(`An unexpected error occurred in \`${endInterview.name}\` function: ${error}`);
+      }
 
-  await interviewChannel.delete();
-  await bot.database?.delete(['interviews', member.user.id]);
+      return;
+    });
+
+  await bot.database?.set(
+    ['users', member.user.id],
+    {
+      interviewStatus: InterviewStatus.ApprovedByText,
+    } satisfies UserData,
+  );
 };
 
-/**
- * Removes users `ViewChannel `access to all categories
- * in the server.
- */
-export function removeUserAccess(
-  bot: BouncerBot,
-  member: GuildMember,
-) {
-  return bot.channels.cache
-    .filter((channel) => channel.type === ChannelType.GuildCategory && channel.id !== bot.config.interviewsCategoryId)
-    .every((category) => {
-      //* We've ensured that `category` is a `CategoryChannel` with `filter()`
-      //* above, so its safe to cast it to that type. If there's a better way
-      //* of ensuring its type though, please use that instead.
-      category = category as CategoryChannel;
+// /**
+//  * Removes users `ViewChannel `access to all categories
+//  * in the server.
+//  */
+// export function removeUserAccess(
+//   bot: BouncerBot,
+//   member: GuildMember,
+// ) {
+//   return bot.channels.cache
+//     .filter((channel) => channel.type === ChannelType.GuildCategory && channel.id !== bot.config.interviewsCategoryId)
+//     .every((category) => {
+//       //* We've ensured that `category` is a `CategoryChannel` with `filter()`
+//       //* above, so its safe to cast it to that type. If there's a better way
+//       //* of ensuring its type though, please use that instead.
+//       category = category as CategoryChannel;
 
-      category.permissionOverwrites.create(member.user.id, {
-        ViewChannel: false,
-      });
-    });
-}
+//       category.permissionOverwrites.create(member.user.id, {
+//         ViewChannel: false,
+//       });
+//     });
+// }
 
 /**
  * Create an interview channel in the `config.interviewsCategory`
