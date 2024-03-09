@@ -27,13 +27,13 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
 
     if (
       !guild ||
-      message.guildId !== bot.server ||
+      message.guildId !== bot.config.server ||
       !member ||
       message.channel.type !== ChannelType.GuildText ||
       message.author.bot || !message.channel.nsfw
     ) return;
 
-    if (message.member?.roles.cache.hasAny(bot.roles.nsfwAccessId, bot.roles.nsfwVerifiedId)) {
+    if (message.member?.roles.cache.hasAny(bot.config.roles.nsfwAccessId, bot.config.roles.nsfwVerifiedId)) {
       return;
     }
 

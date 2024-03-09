@@ -31,7 +31,7 @@ export function removeUserAccess(
   member: GuildMember,
 ) {
   return bot.channels.cache
-    .filter((channel) => channel.type === ChannelType.GuildCategory && channel.id !== bot.interviewsCategory)
+    .filter((channel) => channel.type === ChannelType.GuildCategory && channel.id !== bot.config.interviewsCategoryId)
     .every((category) => {
       //* We've ensured that `category` is a `CategoryChannel` with `filter()`
       //* above, so its safe to cast it to that type. If there's a better way
@@ -51,7 +51,7 @@ export function removeUserAccess(
 export async function createInterviewChannel(bot: BouncerBot, guild: Guild, member: GuildMember) {
   const createdChannel = await guild.channels.create({
     name: `verification-interview-${member.user.id}`,
-    parent: bot.interviewsCategory,
+    parent: bot.config.interviewsCategoryId,
     permissionOverwrites: [
       {
         id: member.user.id,

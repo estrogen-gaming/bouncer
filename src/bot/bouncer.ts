@@ -9,21 +9,19 @@ export class BouncerBot extends Client {
   database: Deno.Kv | undefined;
   logger: Logger;
 
-  server: string;
-  roles: DiscordConfigRoles;
-  interviewsCategory: string;
+  config: Omit<DiscordConfig, 'token'>;
 
   constructor(config: DiscordConfig, logger: Logger) {
+    const { token, ...rest } = config;
+
     super({
       intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
     });
 
-    this.token = config.token;
+    this.token = token;
 
     this.logger = logger;
 
-    this.server = config.server;
-    this.roles = config.roles;
-    this.interviewsCategory = config.interviewsCategoryId;
+    this.config = rest;
   }
 }
