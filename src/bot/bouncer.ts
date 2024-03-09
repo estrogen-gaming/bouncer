@@ -1,5 +1,5 @@
 import { Client, GatewayIntentBits } from '@npm/discord.js';
-import { DiscordConfig, DiscordConfigRoles } from '../config.ts';
+import { DiscordConfig } from '../config.ts';
 import { Logger } from '@std/log';
 
 /**
