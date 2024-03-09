@@ -1,6 +1,15 @@
 import { dirname } from '@std/path';
 import { existsPath } from './utils.ts';
 
+export enum InterviewType {
+  Text,
+  Id,
+}
+
+export interface Interview {
+  interviewType: InterviewType;
+}
+
 /**
  * Setup a database instance.
  *

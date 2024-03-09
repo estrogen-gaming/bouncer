@@ -1,10 +1,25 @@
 import { type CategoryChannel, ChannelType, Guild, type GuildMember, PermissionFlagsBits } from '@npm/discord.js';
 
 import { BouncerBot } from './bouncer.ts';
+import { InterviewType } from '../database.ts';
+import { Interview } from '../database.ts';
 
 export const interviewUser = async (bot: BouncerBot, guild: Guild, member: GuildMember) => {
+  const existsInterview = await bot.database?.get(['interviews', member.user.id]);
+  if (existsInterview?.value) {
+    // TODO: Log a `logger.warn` here..
+    return;
+  }
+
   removeUserAccess(bot, member);
   await createInterviewChannel(bot, guild, member);
+
+  await bot.database?.set(
+    ['interviews', member.user.id],
+    {
+      interviewType: InterviewType.Text,
+    } satisfies Interview,
+  );
 };
 
 /**
