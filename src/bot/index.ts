@@ -1,8 +1,8 @@
-import { type CategoryChannel, type Channel, ChannelType, Client, Events, GatewayIntentBits } from '@npm/discord.js';
+import { ChannelType, Client, Events, GatewayIntentBits } from '@npm/discord.js';
 import { Logger } from '@std/log';
 
-import { DiscordConfig, DiscordConfigRoles } from './config.ts';
-import { PermissionFlagsBits } from '@npm/discord.js';
+import { DiscordConfig, DiscordConfigRoles } from '../config.ts';
+import { createInterviewChannel, removeUserAccess } from './helpers.ts';
 
 export class Bot extends Client {
   server: string;
@@ -46,36 +46,11 @@ export const startBot = async (config: DiscordConfig, logger: Logger) => {
     } else {
       const { member } = message;
 
-      // TODO: Create helper functions for those.
       // Restrict users access to every channel in the server
-      guild?.channels.cache
-        .filter((channel) => channel.type === ChannelType.GuildCategory && channel.id !== bot.interviewsCategory)
-        .every((category) => {
-          //* We've ensured that `category` is a `CategoryChannel` with `filter()`
-          //* above, so its safe to cast it to that type. If there's a better way
-          //* of ensuring its type though, please use that instead.
-          category = category as CategoryChannel;
-
-          category.permissionOverwrites.create(member.id, {
-            ViewChannel: false,
-          });
-        });
+      removeUserAccess(bot, member);
 
       // Create a new channel for the user to be interviewed
-      guild?.channels.create({
-        name: `verification-interview-${member.user.id}`,
-        parent: bot.interviewsCategory,
-        permissionOverwrites: [
-          {
-            id: member.user.id,
-            allow: [PermissionFlagsBits.ViewChannel],
-          },
-          {
-            id: guild.roles.everyone.id,
-            deny: [PermissionFlagsBits.ViewChannel],
-          },
-        ],
-      });
+      createInterviewChannel(bot, guild, member);
     }
   });
 };

@@ -4,7 +4,7 @@ import { resolve as resolvePath } from '@std/path';
 import { existsPath } from './utils.ts';
 import { parseConfig } from './config.ts';
 import { customLogger } from './logger.ts';
-import { startBot } from './bot.ts';
+import { startBot } from './bot/index.ts';
 
 export const runCLI = async () => {
   const args = parseArgs(Deno.args, {
