@@ -7,7 +7,7 @@ import { Interview } from '../database.ts';
 export const interviewUser = async (bot: BouncerBot, guild: Guild, member: GuildMember) => {
   const existsInterview = await bot.database?.get(['interviews', member.user.id]);
   if (existsInterview?.value) {
-    // TODO: Log a `logger.warn` here..
+    bot.logger.warn(`User \`${member.user.id} (${member.user.globalName})\` is already in an interview. Ignoring...`);
     return;
   }
 

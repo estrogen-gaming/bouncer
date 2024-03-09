@@ -13,7 +13,7 @@ import { BouncerBot } from './bouncer.ts';
  * @param logger Logger instance.
  */
 export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger: Logger) => {
-  const bot = new BouncerBot(config);
+  const bot = new BouncerBot(config, logger);
 
   await bot.login();
   bot.database = database;
