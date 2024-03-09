@@ -36,7 +36,7 @@ export const checkUserInterviewStatus = async (bot: BouncerBot, guild: Guild, me
 
   // TODO: Create a function for ensuring that every
   // configuration field exists and is the desired kind.
-  let interviewFlagsChannel = guild.channels.cache.get(bot.config.channels.interviewFlagsId);
+  const interviewFlagsChannel = guild.channels.cache.get(bot.config.channels.interviewFlagsId);
   if (!interviewFlagsChannel) {
     bot.logger.error(
       `Channel for \`interviewFlagsChannel\` with the id \`${bot.config.channels.interviewFlagsId}\` could not be found.`,
@@ -64,7 +64,7 @@ export const checkUserInterviewStatus = async (bot: BouncerBot, guild: Guild, me
   interviewFlagsChannel.send(`${member} marked as pending interview. To interview them, use /interview command.`);
 };
 
-export const endInterview = async (bot: BouncerBot, guild: Guild, member: GuildMember) => {
+export const endInterview = async (bot: BouncerBot, member: GuildMember) => {
   const existsUser = await bot.database?.get<UserData>(['users', member.user.id]);
   if (!existsUser?.value || !existsUser.value.interviewStatus) {
     bot.logger.warn(`User \`${member.user.id} (${member.user.globalName})\` has not been interviewed. Ignoring...`);
