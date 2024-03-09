@@ -4,6 +4,7 @@ import { input, object, string, ZodError } from '@x/zod';
 import { fromZodError } from '@npm/zod-validation-error';
 
 export const DiscordConfigRolesSchema = object({
+  pendingInterviewId: string(),
   nsfwAccessId: string(),
   nsfwVerifiedId: string(),
 });
