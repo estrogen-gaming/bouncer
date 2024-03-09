@@ -1,31 +1,12 @@
-import { ChannelType, Client, Events, GatewayIntentBits } from '@npm/discord.js';
+import { ChannelType, Events } from '@npm/discord.js';
 import { Logger } from '@std/log';
 
-import { DiscordConfig, DiscordConfigRoles } from '../config.ts';
+import { DiscordConfig } from '../config.ts';
 import { interviewUser } from './helpers.ts';
-
-export class Bot extends Client {
-  database: Deno.Kv | undefined;
-
-  server: string;
-  roles: DiscordConfigRoles;
-  interviewsCategory: string;
-
-  constructor(config: DiscordConfig) {
-    super({
-      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
-    });
-
-    this.token = config.token;
-
-    this.server = config.server;
-    this.roles = config.roles;
-    this.interviewsCategory = config.interviewsCategoryId;
-  }
-}
+import { BouncerBot } from './bouncer.ts';
 
 export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger: Logger) => {
-  const bot = new Bot(config);
+  const bot = new BouncerBot(config);
 
   await bot.login();
   bot.database = database;

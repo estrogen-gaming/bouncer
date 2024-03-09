@@ -1,8 +1,8 @@
 import { type CategoryChannel, ChannelType, Guild, type GuildMember, PermissionFlagsBits } from '@npm/discord.js';
 
-import { Bot } from './index.ts';
+import { BouncerBot } from './bouncer.ts';
 
-export const interviewUser = async (bot: Bot, guild: Guild, member: GuildMember) => {
+export const interviewUser = async (bot: BouncerBot, guild: Guild, member: GuildMember) => {
   removeUserAccess(bot, member);
   await createInterviewChannel(bot, guild, member);
 };
@@ -12,7 +12,7 @@ export const interviewUser = async (bot: Bot, guild: Guild, member: GuildMember)
  * in the server.
  */
 export function removeUserAccess(
-  bot: Bot,
+  bot: BouncerBot,
   member: GuildMember,
 ) {
   return bot.channels.cache.filter((channel) =>
@@ -34,7 +34,7 @@ export function removeUserAccess(
  * Create an interview channel in the `config.interviewsCategory`
  * for the user.
  */
-export async function createInterviewChannel(bot: Bot, guild: Guild, member: GuildMember) {
+export async function createInterviewChannel(bot: BouncerBot, guild: Guild, member: GuildMember) {
   const createdChannel = await guild.channels.create({
     name: `verification-interview-${member.user.id}`,
     parent: bot.interviewsCategory,
