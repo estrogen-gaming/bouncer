@@ -1,8 +1,7 @@
 import { ChannelType, DiscordAPIError, Guild, type GuildMember, PermissionFlagsBits } from '@npm/discord.js';
 
 import { BouncerBot } from './bouncer.ts';
-import { UserData } from '../database.ts';
-import { InterviewStatus } from '../database.ts';
+import { InterviewStatus, UserData } from '../database.ts';
 import { DiscordConfig } from '../config.ts';
 
 /**

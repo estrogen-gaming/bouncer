@@ -1,4 +1,5 @@
 import { dirname } from '@std/path';
+
 import { existsPath } from './utils.ts';
 
 export enum InterviewType {
