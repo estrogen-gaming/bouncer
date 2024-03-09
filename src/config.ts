@@ -1,22 +1,27 @@
 import { parse as parseYAML } from '@std/yaml';
 
-import { input, object, string, ZodError } from '@x/zod';
+import { custom, input, object, string, ZodError } from '@x/zod';
 import { fromZodError } from '@npm/zod-validation-error';
 
+const numericString = custom<string>(
+  (value) => typeof value === 'string' ? /^\d+$/.test(value) : false,
+  'Value should be a numeric string.',
+);
+
 export const DiscordConfigChannelsSchema = object({
-  interviewFlagsId: string(),
+  interviewFlagsId: numericString,
 });
 
 export const DiscordConfigRolesSchema = object({
-  pendingInterviewId: string(),
-  nsfwAccessId: string(),
-  nsfwVerifiedId: string(),
+  pendingInterviewId: numericString,
+  nsfwAccessId: numericString,
+  nsfwVerifiedId: numericString,
 });
 
 export const DiscordConfigSchema = object({
   token: string(),
-  server: string(),
-  interviewsCategoryId: string(),
+  serverId: numericString,
+  interviewsCategoryId: numericString,
   channels: DiscordConfigChannelsSchema,
   roles: DiscordConfigRolesSchema,
 });

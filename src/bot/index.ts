@@ -27,7 +27,7 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
 
     if (
       !guild ||
-      message.guildId !== bot.config.server ||
+      message.guildId !== bot.config.serverId ||
       !member ||
       message.channel.type !== ChannelType.GuildText ||
       message.author.bot || !message.channel.nsfw
