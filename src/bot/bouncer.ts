@@ -19,9 +19,7 @@ export class BouncerBot extends Client {
     });
 
     this.token = token;
-
     this.logger = logger;
-
     this.config = rest;
   }
 }
