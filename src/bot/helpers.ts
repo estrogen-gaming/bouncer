@@ -1,11 +1,20 @@
-import { type CategoryChannel, ChannelType, type GuildMember, PermissionFlagsBits } from '@npm/discord.js';
-import { Bot } from './index.ts';
-import { Guild } from '@npm/discord.js';
+import { type CategoryChannel, ChannelType, Guild, type GuildMember, PermissionFlagsBits } from '@npm/discord.js';
 
-export const removeUserAccess = (
+import { Bot } from './index.ts';
+
+export const interviewUser = async (bot: Bot, guild: Guild, member: GuildMember) => {
+  removeUserAccess(bot, member);
+  await createInterviewChannel(bot, guild, member);
+};
+
+/**
+ * Removes users `ViewChannel `access to all categories
+ * in the server.
+ */
+export function removeUserAccess(
   bot: Bot,
   member: GuildMember,
-) => {
+) {
   return bot.channels.cache.filter((channel) =>
     channel.type === ChannelType.GuildCategory && channel.id !== bot.interviewsCategory
   )
@@ -19,9 +28,13 @@ export const removeUserAccess = (
         ViewChannel: false,
       });
     });
-};
+}
 
-export const createInterviewChannel = async (bot: Bot, guild: Guild, member: GuildMember) => {
+/**
+ * Create an interview channel in the `config.interviewsCategory`
+ * for the user.
+ */
+export async function createInterviewChannel(bot: Bot, guild: Guild, member: GuildMember) {
   const createdChannel = await guild.channels.create({
     name: `verification-interview-${member.user.id}`,
     parent: bot.interviewsCategory,
@@ -38,4 +51,4 @@ export const createInterviewChannel = async (bot: Bot, guild: Guild, member: Gui
   });
 
   return createdChannel;
-};
+}

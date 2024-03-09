@@ -2,7 +2,7 @@ import { ChannelType, Client, Events, GatewayIntentBits } from '@npm/discord.js'
 import { Logger } from '@std/log';
 
 import { DiscordConfig, DiscordConfigRoles } from '../config.ts';
-import { createInterviewChannel, removeUserAccess } from './helpers.ts';
+import { interviewUser } from './helpers.ts';
 
 export class Bot extends Client {
   database: Deno.Kv | undefined;
@@ -34,7 +34,7 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
     logger.info(`Connected to Discord as ${ready.user.username}`);
   });
 
-  bot.on(Events.MessageCreate, (message) => {
+  bot.on(Events.MessageCreate, async (message) => {
     const { guild, member } = message;
 
     if (
@@ -49,10 +49,6 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
       return;
     }
 
-    // Restrict users access to every channel in the server
-    removeUserAccess(bot, member);
-
-    // Create a new channel for the user to be interviewed
-    createInterviewChannel(bot, guild, member);
+    await interviewUser(bot, guild, member);
   });
 };
