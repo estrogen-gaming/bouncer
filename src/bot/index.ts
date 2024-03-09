@@ -15,11 +15,11 @@ import { BouncerBot } from './bouncer.ts';
 export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger: Logger) => {
   const bot = new BouncerBot(config, logger);
 
-  await bot.login();
+  await bot.login().then(() => logger.info('Logged in to Discord!'));
   bot.database = database;
 
   bot.once(Events.ClientReady, (ready) => {
-    logger.info(`Connected to Discord as ${ready.user.username}!`);
+    logger.info(`Bot is ready as ${ready.user.username}!`);
   });
 
   bot.on(Events.MessageCreate, async (message) => {
