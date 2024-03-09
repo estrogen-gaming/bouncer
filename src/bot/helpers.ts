@@ -1,4 +1,11 @@
-import { ChannelType, DiscordAPIError, Guild, type GuildMember, PermissionFlagsBits } from '@npm/discord.js';
+import {
+  ChannelType,
+  DiscordAPIError,
+  Guild,
+  type GuildMember,
+  PermissionFlagsBits,
+  TextChannel,
+} from '@npm/discord.js';
 
 import { BouncerBot } from './bouncer.ts';
 import { InterviewStatus, UserData } from '../database.ts';
@@ -33,24 +40,11 @@ export const checkUserInterviewStatus = async (bot: BouncerBot, guild: Guild, me
       return;
     });
 
-  // TODO: Create a function for ensuring that every
-  // configuration field exists and is the desired kind.
-  const interviewFlagsChannel = guild.channels.cache.get(bot.config.channels.interviewFlagsId);
-  if (!interviewFlagsChannel) {
-    bot.logger.error(
-      `Channel for \`interviewFlagsChannel\` with the id \`${bot.config.channels.interviewFlagsId}\` could not be found.`,
-    );
-
-    return;
-  }
-
-  if (interviewFlagsChannel.type !== ChannelType.GuildText) {
-    bot.logger.error(
-      `Channel for \`interviewFlagsChannel\` with the id \`${bot.config.channels.interviewFlagsId}\` is not a text channel.`,
-    );
-
-    return;
-  }
+  //* We've already ensured that this channel is in fact a
+  //* text channel in bots ready event.
+  const interviewFlagsChannel = guild.channels.cache.get(
+    bot.config.channels.interviewFlagsId,
+  ) as TextChannel | undefined;
 
   await bot.database?.set(
     ['users', member.user.id],
@@ -60,7 +54,7 @@ export const checkUserInterviewStatus = async (bot: BouncerBot, guild: Guild, me
   );
 
   // TODO: Mention the command instead of sending it directly.
-  interviewFlagsChannel.send(`${member} marked as pending interview. To interview them, use /interview command.`);
+  interviewFlagsChannel?.send(`${member} marked as pending interview. To interview them, use /interview command.`);
 };
 
 export const endInterview = async (bot: BouncerBot, member: GuildMember) => {
