@@ -1,4 +1,4 @@
-import * as YAML from '@std/yaml';
+import { parse as parseYAML } from '@std/yaml';
 
 import { input, object, string, ZodError } from '@x/zod';
 import { fromZodError } from '@npm/zod-validation-error';
@@ -34,7 +34,7 @@ export type Config = input<typeof ConfigSchema>;
 export const parseConfig = async (path: string) => {
   try {
     const file = await Deno.readTextFile(path);
-    const config = YAML.parse(file);
+    const config = parseYAML(file);
 
     return ConfigSchema.parse(config);
   } catch (error) {

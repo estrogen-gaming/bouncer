@@ -19,7 +19,7 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
   bot.database = database;
 
   bot.once(Events.ClientReady, (ready) => {
-    logger.info(`Connected to Discord as ${ready.user.username}`);
+    logger.info(`Connected to Discord as ${ready.user.username}!`);
   });
 
   bot.on(Events.MessageCreate, async (message) => {
