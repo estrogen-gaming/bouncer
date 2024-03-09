@@ -1,4 +1,12 @@
-import * as log from '@std/log';
+import {
+  BaseHandler,
+  ConsoleHandler,
+  FormatterFunction,
+  getLogger,
+  LoggerConfig,
+  RotatingFileHandler,
+  setup,
+} from '@std/log';
 import { format as formatDate } from '@std/datetime';
 import { blue, gray, green, red, yellow } from '@std/fmt/colors';
 
@@ -14,7 +22,7 @@ const LevelNames = {
 //* in case of changes.
 const maxLevelNameLength = Math.max(...Object.values(LevelNames).map((name) => name.length));
 
-const formatter: log.FormatterFunction = (record) => {
+const formatter: FormatterFunction = (record) => {
   let levelName = LevelNames[record.levelName as keyof typeof LevelNames];
   levelName = levelName.padEnd(maxLevelNameLength);
 
@@ -40,9 +48,9 @@ const formatter: log.FormatterFunction = (record) => {
 };
 
 export const customLogger = async (logFolder?: string) => {
-  const handlers: Record<string, log.BaseHandler> = {
-    consoleHandler: new log.ConsoleHandler('NOTSET', { formatter, useColors: false }),
-    debugHandler: new log.ConsoleHandler('DEBUG', { formatter, useColors: false }),
+  const handlers: Record<string, BaseHandler> = {
+    consoleHandler: new ConsoleHandler('NOTSET', { formatter, useColors: false }),
+    debugHandler: new ConsoleHandler('DEBUG', { formatter, useColors: false }),
   };
   const loggers = {
     default: {
@@ -52,10 +60,10 @@ export const customLogger = async (logFolder?: string) => {
       level: 'DEBUG',
       handlers: Deno.env.get('DEBUG') ? ['debugHandler'] : undefined,
     },
-  } satisfies Record<string, log.LoggerConfig>;
+  } satisfies Record<string, LoggerConfig>;
 
   if (logFolder) {
-    handlers.consoleFileHandler = new log.RotatingFileHandler('NOTSET', {
+    handlers.consoleFileHandler = new RotatingFileHandler('NOTSET', {
       filename: `${logFolder}/bouncer.log`,
       maxBackupCount: 5,
       maxBytes: 2 * 1024 * 1024,
@@ -68,10 +76,10 @@ export const customLogger = async (logFolder?: string) => {
     await Deno.mkdir(logFolder, { recursive: true });
   }
 
-  log.setup({
+  setup({
     handlers,
     loggers,
   });
 
-  return Deno.env.get('DEBUG') ? log.getLogger('debug') : log.getLogger();
+  return Deno.env.get('DEBUG') ? getLogger('debug') : getLogger();
 };
