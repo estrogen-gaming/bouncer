@@ -7,6 +7,9 @@ import { customLogger } from './logger.ts';
 import { startBot } from './bot/index.ts';
 import { setupDatabase } from './database.ts';
 
+/**
+ * Parses CLI input, sets and and starts everything.
+ */
 export const runCLI = async () => {
   const args = parseArgs(Deno.args, {
     string: ['config'],

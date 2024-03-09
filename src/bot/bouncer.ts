@@ -1,6 +1,9 @@
 import { Client, GatewayIntentBits } from '@npm/discord.js';
 import { DiscordConfig, DiscordConfigRoles } from '../config.ts';
 
+/**
+ * Custom {@link Client} class with additional properties.
+ */
 export class BouncerBot extends Client {
   database: Deno.Kv | undefined;
 

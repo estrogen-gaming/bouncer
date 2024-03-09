@@ -25,6 +25,12 @@ export type DiscordConfigRoles = input<typeof DiscordConfigRolesSchema>;
 export type DiscordConfig = input<typeof DiscordConfigSchema>;
 export type Config = input<typeof ConfigSchema>;
 
+/**
+ * Parses config file and returns the parsed data.
+ *
+ * @param path Config path to parse.
+ * @returns Parsed config data. Throws {@link fromZodError} error if parsing fails.
+ */
 export const parseConfig = async (path: string) => {
   try {
     const file = await Deno.readTextFile(path);

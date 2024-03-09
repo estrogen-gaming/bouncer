@@ -22,6 +22,12 @@ const LevelNames = {
 //* in case of changes.
 const maxLevelNameLength = Math.max(...Object.values(LevelNames).map((name) => name.length));
 
+/**
+ * Custom {@link FormatterFunction} function to customise logging format.
+ *
+ * @param record Log record.
+ * @returns Customised log string.
+ */
 const formatter: FormatterFunction = (record) => {
   let levelName = LevelNames[record.levelName as keyof typeof LevelNames];
   levelName = levelName.padEnd(maxLevelNameLength);
@@ -47,6 +53,12 @@ const formatter: FormatterFunction = (record) => {
   } ${record.msg}`;
 };
 
+/**
+ * Sets up a custom logger with custom formatter and handlers.
+ *
+ * @param logFolder Folder to save logs in.
+ * @returns Custom logger instance.
+ */
 export const customLogger = async (logFolder?: string) => {
   const handlers: Record<string, BaseHandler> = {
     consoleHandler: new ConsoleHandler('NOTSET', { formatter, useColors: false }),

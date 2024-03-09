@@ -15,9 +15,8 @@ export function removeUserAccess(
   bot: BouncerBot,
   member: GuildMember,
 ) {
-  return bot.channels.cache.filter((channel) =>
-    channel.type === ChannelType.GuildCategory && channel.id !== bot.interviewsCategory
-  )
+  return bot.channels.cache
+    .filter((channel) => channel.type === ChannelType.GuildCategory && channel.id !== bot.interviewsCategory)
     .every((category) => {
       //* We've ensured that `category` is a `CategoryChannel` with `filter()`
       //* above, so its safe to cast it to that type. If there's a better way

@@ -1,6 +1,12 @@
 import { dirname } from '@std/path';
 import { existsPath } from './utils.ts';
 
+/**
+ * Setup a database instance.
+ *
+ * @param path Database file paths.
+ * @returns Database instance.
+ */
 export const setupDatabase = async (path: string) => {
   const folder = dirname(path);
 

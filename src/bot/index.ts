@@ -5,6 +5,13 @@ import { DiscordConfig } from '../config.ts';
 import { interviewUser } from './helpers.ts';
 import { BouncerBot } from './bouncer.ts';
 
+/**
+ * Starts the Discord bot and handles events.
+ *
+ * @param database Database instance.
+ * @param config Bot configuration.
+ * @param logger Logger instance.
+ */
 export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger: Logger) => {
   const bot = new BouncerBot(config);
 
