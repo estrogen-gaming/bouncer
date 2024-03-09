@@ -4,14 +4,14 @@ import { input, object, string, ZodError } from '@x/zod';
 import { fromZodError } from '@npm/zod-validation-error';
 
 export const DiscordConfigRolesSchema = object({
-  nsfwAccess: string(),
-  nsfwVerified: string(),
+  nsfwAccessId: string(),
+  nsfwVerifiedId: string(),
 });
 
 export const DiscordConfigSchema = object({
   token: string(),
   server: string(),
-  interviewsCategory: string(),
+  interviewsCategoryId: string(),
   roles: DiscordConfigRolesSchema,
 });
 

@@ -20,7 +20,7 @@ export class Bot extends Client {
 
     this.server = config.server;
     this.roles = config.roles;
-    this.interviewsCategory = config.interviewsCategory;
+    this.interviewsCategory = config.interviewsCategoryId;
   }
 }
 
@@ -35,26 +35,24 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
   });
 
   bot.on(Events.MessageCreate, (message) => {
+    const { guild, member } = message;
+
     if (
-      !message.guild ||
+      !guild ||
       message.guildId !== bot.server ||
-      !message.member ||
+      !member ||
       message.channel.type !== ChannelType.GuildText ||
       message.author.bot || !message.channel.nsfw
     ) return;
 
-    const guild = message.guild;
-
-    if (message.member?.roles.cache.hasAny(bot.roles.nsfwAccess, bot.roles.nsfwVerified)) {
+    if (message.member?.roles.cache.hasAny(bot.roles.nsfwAccessId, bot.roles.nsfwVerifiedId)) {
       return;
-    } else {
-      const { member } = message;
-
-      // Restrict users access to every channel in the server
-      removeUserAccess(bot, member);
-
-      // Create a new channel for the user to be interviewed
-      createInterviewChannel(bot, guild, member);
     }
+
+    // Restrict users access to every channel in the server
+    removeUserAccess(bot, member);
+
+    // Create a new channel for the user to be interviewed
+    createInterviewChannel(bot, guild, member);
   });
 };
