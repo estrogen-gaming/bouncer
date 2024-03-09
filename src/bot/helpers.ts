@@ -1,9 +1,9 @@
-import { ChannelType, Guild, type GuildMember, PermissionFlagsBits } from '@npm/discord.js';
+import { ChannelType, DiscordAPIError, Guild, type GuildMember, PermissionFlagsBits } from '@npm/discord.js';
 
 import { BouncerBot } from './bouncer.ts';
-import { DiscordAPIError } from '@npm/discord.js';
 import { UserData } from '../database.ts';
 import { InterviewStatus } from '../database.ts';
+import { DiscordConfig } from '../config.ts';
 
 /**
  * Check if user has been interviewed. If not, add them to the pending interview
@@ -135,4 +135,79 @@ export async function createInterviewChannel(bot: BouncerBot, guild: Guild, memb
   });
 
   return createdChannel;
+}
+
+/**
+ * Ensure that specified configuration fields exist in guild and are the desired kind.
+ *
+ * @param bot Bot instance.
+ * @param guild Guild instance.
+ * @param config Bot configuration
+ */
+export function ensureConfig(bot: BouncerBot, config: Omit<DiscordConfig, 'token'>) {
+  let success = true;
+
+  const guild = bot.guilds.cache.get(config.serverId);
+
+  const interviewsCategory = bot.channels.cache.get(bot.config.interviewsCategoryId);
+  const interviewFlagsChannel = bot.channels.cache.get(config.channels.interviewFlagsId);
+
+  if (!guild) {
+    bot.logger.error(`Guild with the id \`${config.serverId}\` could not be found.`);
+    return false;
+  }
+
+  const pendingInterviewRole = guild.roles.cache.get(config.roles.pendingInterviewId);
+  const nsfwAccessRole = guild.roles.cache.get(config.roles.nsfwAccessId);
+  const nsfwVerifiedRole = guild.roles.cache.get(config.roles.nsfwVerifiedId);
+
+  // Check interviews category
+  if (!interviewsCategory) {
+    bot.logger.error(
+      `Category for \`interviewsCategoryId\` with the id \`${bot.config.interviewsCategoryId}\` could not be found.`,
+    );
+    success = false;
+  } else if (interviewsCategory?.type !== ChannelType.GuildCategory) {
+    bot.logger.error(
+      `Channel for \`interviewsCategoryId\` with the id \`${bot.config.interviewsCategoryId}\` is not a category.`,
+    );
+    success = false;
+  }
+
+  // Check channels
+  if (!interviewFlagsChannel) {
+    bot.logger.error(
+      `Channel for \`interviewFlagsId\` with the id \`${config.channels.interviewFlagsId}\` could not be found.`,
+    );
+    success = false;
+  } else if (interviewFlagsChannel?.type !== ChannelType.GuildText) {
+    bot.logger.error(
+      `Channel for \`interviewFlagsId\` with the id \`${config.channels.interviewFlagsId}\` is not a text channel.`,
+    );
+    success = false;
+  }
+
+  // Check roles
+  if (!pendingInterviewRole) {
+    bot.logger.error(
+      `Role for \`pendingInterviewId\` with the id \`${config.roles.pendingInterviewId}\` could not be found.`,
+    );
+    success = false;
+  }
+
+  if (!nsfwAccessRole) {
+    bot.logger.error(
+      `Role for \`nsfwAccessId\` with the id \`${config.roles.nsfwAccessId}\` could not be found.`,
+    );
+    success = false;
+  }
+
+  if (!nsfwVerifiedRole) {
+    bot.logger.error(
+      `Role for \`nsfwVerifiedId\` with the id \`${config.roles.nsfwVerifiedId}\` could not be found.`,
+    );
+    success = false;
+  }
+
+  return success ? true : Deno.exit(1);
 }

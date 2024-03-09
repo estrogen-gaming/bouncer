@@ -2,7 +2,7 @@ import { ChannelType, Events } from '@npm/discord.js';
 import { Logger } from '@std/log';
 
 import { DiscordConfig } from '../config.ts';
-import { checkUserInterviewStatus } from './helpers.ts';
+import { checkUserInterviewStatus, ensureConfig } from './helpers.ts';
 import { BouncerBot } from './bouncer.ts';
 
 /**
@@ -20,6 +20,8 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
 
   bot.once(Events.ClientReady, (ready) => {
     logger.info(`Bot is ready as ${ready.user.username}!`);
+
+    ensureConfig(bot, bot.config);
   });
 
   bot.on(Events.MessageCreate, async (message) => {
@@ -36,6 +38,8 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
     if (message.member?.roles.cache.hasAny(bot.config.roles.nsfwAccessId, bot.config.roles.nsfwVerifiedId)) {
       return;
     }
+
+    ensureConfig(bot, bot.config);
 
     await checkUserInterviewStatus(bot, guild, member);
   });
