@@ -6,13 +6,15 @@ on:
       - .github/workflows/ci.yaml
       - bin/**
       - src/**
-      - deno.{json,lock}
+      - deno.json
+      - deno.lock
   pull_request:
     paths:
       - .github/workflows/ci.yaml
       - bin/**
       - src/**
-      - deno.{json,lock}
+      - deno.json
+      - deno.lock
 
 jobs:
   ci:
