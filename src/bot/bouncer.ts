@@ -1,25 +1,47 @@
-import { Client, GatewayIntentBits } from '@npm/discord.js';
+import { CategoryChannel, Client, GatewayIntentBits, Guild, Role, TextChannel } from '@npm/discord.js';
 import { DiscordConfig } from '../config.ts';
 import { Logger } from '@std/log';
+
+export interface Context {
+  guild: Guild | undefined;
+  channels: {
+    interviewsCategory: CategoryChannel;
+    interviewFlagsChannel: TextChannel;
+  };
+  roles: {
+    pendingInterview: Role;
+    nsfwAccess: Role;
+    nsfwVerified: Role;
+  };
+}
 
 /**
  * Custom {@link Client} class with additional properties.
  */
 export class BouncerBot extends Client {
-  database: Deno.Kv | undefined;
+  database?: Deno.Kv;
   logger: Logger;
 
-  config: Omit<DiscordConfig, 'token'>;
+  private _context?: Context;
 
   constructor(config: DiscordConfig, logger: Logger) {
-    const { token, ...rest } = config;
-
     super({
       intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers],
     });
 
-    this.token = token;
+    this.token = config.token;
     this.logger = logger;
-    this.config = rest;
+  }
+
+  set context(context: Context) {
+    this._context = context;
+  }
+
+  get context() {
+    if (!this._context) {
+      throw new Error('Context is not initialized yet.');
+    }
+
+    return this._context;
   }
 }

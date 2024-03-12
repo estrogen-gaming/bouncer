@@ -1,15 +1,7 @@
-import {
-  ChannelType,
-  DiscordAPIError,
-  Guild,
-  type GuildMember,
-  PermissionFlagsBits,
-  TextChannel,
-} from '@npm/discord.js';
+import { DiscordAPIError, Guild, type GuildMember, PermissionFlagsBits } from '@npm/discord.js';
 
 import { BouncerBot } from './bouncer.ts';
 import { InterviewStatus, UserData } from '../database.ts';
-import { DiscordConfig } from '../config.ts';
 
 /**
  * Check if user has been interviewed. If not, add them to the pending interview
@@ -20,14 +12,14 @@ import { DiscordConfig } from '../config.ts';
  * @param member Event invoker member instance.
  * @returns
  */
-export const checkUserInterviewStatus = async (bot: BouncerBot, guild: Guild, member: GuildMember) => {
+export const checkUserInterviewStatus = async (bot: BouncerBot, member: GuildMember) => {
   const existsUser = await bot.database?.get<UserData>(['users', member.user.id]);
   if (existsUser?.value && existsUser.value.interviewStatus) {
     bot.logger.warn(`User \`${member.user.id} (${member.user.globalName})\` has already been interviewed. Ignoring...`);
     return;
   }
 
-  await member.roles.add(bot.config.roles.pendingInterviewId)
+  await member.roles.add(bot.context.roles.pendingInterview)
     .catch((error) => {
       if (error instanceof DiscordAPIError && error.code === 50013) {
         bot.logger.error(
@@ -42,9 +34,7 @@ export const checkUserInterviewStatus = async (bot: BouncerBot, guild: Guild, me
 
   //* We've already ensured that this channel is in fact a
   //* text channel in bots ready event.
-  const interviewFlagsChannel = guild.channels.cache.get(
-    bot.config.channels.interviewFlagsId,
-  ) as TextChannel | undefined;
+  const interviewFlagsChannel = bot.context.channels.interviewFlagsChannel;
 
   await bot.database?.set(
     ['users', member.user.id],
@@ -64,7 +54,7 @@ export const endInterview = async (bot: BouncerBot, member: GuildMember) => {
     return;
   }
 
-  await member.roles.remove(bot.config.roles.pendingInterviewId)
+  await member.roles.remove(bot.context.roles.pendingInterview)
     .catch((error) => {
       if (error instanceof DiscordAPIError && error.code === 50013) {
         bot.logger.error(
@@ -114,7 +104,7 @@ export const endInterview = async (bot: BouncerBot, member: GuildMember) => {
 export async function createInterviewChannel(bot: BouncerBot, guild: Guild, member: GuildMember) {
   const createdChannel = await guild.channels.create({
     name: `verification-interview-${member.user.id}`,
-    parent: bot.config.interviewsCategoryId,
+    parent: bot.context.channels.interviewsCategory,
     permissionOverwrites: [
       {
         id: member.user.id,
@@ -128,79 +118,4 @@ export async function createInterviewChannel(bot: BouncerBot, guild: Guild, memb
   });
 
   return createdChannel;
-}
-
-/**
- * Ensure that specified configuration fields exist in guild and are the desired kind.
- *
- * @param bot Bot instance.
- * @param guild Guild instance.
- * @param config Bot configuration
- */
-export function ensureConfig(bot: BouncerBot, config: Omit<DiscordConfig, 'token'>) {
-  let success = true;
-
-  const guild = bot.guilds.cache.get(config.serverId);
-
-  const interviewsCategory = bot.channels.cache.get(bot.config.interviewsCategoryId);
-  const interviewFlagsChannel = bot.channels.cache.get(config.channels.interviewFlagsId);
-
-  if (!guild) {
-    bot.logger.error(`Guild with the id \`${config.serverId}\` could not be found.`);
-    return false;
-  }
-
-  const pendingInterviewRole = guild.roles.cache.get(config.roles.pendingInterviewId);
-  const nsfwAccessRole = guild.roles.cache.get(config.roles.nsfwAccessId);
-  const nsfwVerifiedRole = guild.roles.cache.get(config.roles.nsfwVerifiedId);
-
-  // Check interviews category
-  if (!interviewsCategory) {
-    bot.logger.error(
-      `Category for \`interviewsCategoryId\` with the id \`${bot.config.interviewsCategoryId}\` could not be found.`,
-    );
-    success = false;
-  } else if (interviewsCategory?.type !== ChannelType.GuildCategory) {
-    bot.logger.error(
-      `Channel for \`interviewsCategoryId\` with the id \`${bot.config.interviewsCategoryId}\` is not a category.`,
-    );
-    success = false;
-  }
-
-  // Check channels
-  if (!interviewFlagsChannel) {
-    bot.logger.error(
-      `Channel for \`interviewFlagsId\` with the id \`${config.channels.interviewFlagsId}\` could not be found.`,
-    );
-    success = false;
-  } else if (interviewFlagsChannel?.type !== ChannelType.GuildText) {
-    bot.logger.error(
-      `Channel for \`interviewFlagsId\` with the id \`${config.channels.interviewFlagsId}\` is not a text channel.`,
-    );
-    success = false;
-  }
-
-  // Check roles
-  if (!pendingInterviewRole) {
-    bot.logger.error(
-      `Role for \`pendingInterviewId\` with the id \`${config.roles.pendingInterviewId}\` could not be found.`,
-    );
-    success = false;
-  }
-
-  if (!nsfwAccessRole) {
-    bot.logger.error(
-      `Role for \`nsfwAccessId\` with the id \`${config.roles.nsfwAccessId}\` could not be found.`,
-    );
-    success = false;
-  }
-
-  if (!nsfwVerifiedRole) {
-    bot.logger.error(
-      `Role for \`nsfwVerifiedId\` with the id \`${config.roles.nsfwVerifiedId}\` could not be found.`,
-    );
-    success = false;
-  }
-
-  return success ? true : Deno.exit(1);
 }
