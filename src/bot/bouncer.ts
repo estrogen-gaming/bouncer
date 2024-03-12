@@ -6,6 +6,7 @@ import {
   Guild,
   Role,
   SlashCommandBuilder,
+  SlashCommandSubcommandsOnlyBuilder,
   TextChannel,
 } from '@npm/discord.js';
 import { Logger } from '@std/log';
@@ -30,13 +31,18 @@ export interface Context {
   };
 }
 
+export type BouncerSlashCommandBuilder =
+  | SlashCommandBuilder
+  | SlashCommandSubcommandsOnlyBuilder
+  | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
+
 /**
  * Custom {@link Client} class with additional properties.
  */
 export class BouncerBot extends Client {
   logger: Logger;
 
-  commands: Collection<SlashCommandBuilder, Command>;
+  commands: Collection<BouncerSlashCommandBuilder, Command>;
 
   private _database?: Deno.Kv;
   private _context?: Context;
