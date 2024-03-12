@@ -10,6 +10,7 @@ const numericString = () =>
   );
 
 export const DiscordConfigChannelsSchema = object({
+  interviewsCategoryId: numericString(),
   interviewFlagsId: numericString(),
 });
 
@@ -22,7 +23,6 @@ export const DiscordConfigRolesSchema = object({
 export const DiscordConfigSchema = object({
   token: string(),
   serverId: numericString(),
-  interviewsCategoryId: numericString(),
   channels: DiscordConfigChannelsSchema,
   roles: DiscordConfigRolesSchema,
 });

@@ -58,7 +58,7 @@ export function initialiseContext(bot: BouncerBot, config: Omit<DiscordConfig, '
     Deno.exit(1);
   }
 
-  const interviewsCategory = guild.channels.cache.get(config.interviewsCategoryId);
+  const interviewsCategory = guild.channels.cache.get(config.channels.interviewsCategoryId);
   const interviewFlagsChannel = guild.channels.cache.get(config.channels.interviewFlagsId);
 
   const pendingInterviewRole = guild.roles.cache.get(config.roles.pendingInterviewId);
@@ -68,12 +68,12 @@ export function initialiseContext(bot: BouncerBot, config: Omit<DiscordConfig, '
   // Check interviews category
   if (!interviewsCategory) {
     bot.logger.error(
-      `Category for \`interviewsCategoryId\` with the id \`${config.interviewsCategoryId}\` could not be found.`,
+      `Category for \`interviewsCategoryId\` with the id \`${config.channels.interviewsCategoryId}\` could not be found.`,
     );
     Deno.exit(1);
   } else if (interviewsCategory.type !== ChannelType.GuildCategory) {
     bot.logger.error(
-      `Channel for \`interviewsCategoryId\` with the id \`${config.interviewsCategoryId}\` is not a category.`,
+      `Channel for \`interviewsCategoryId\` with the id \`${config.channels.interviewsCategoryId}\` is not a category.`,
     );
     Deno.exit(1);
   }
