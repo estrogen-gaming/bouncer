@@ -3,7 +3,7 @@ import { DiscordConfig } from '../config.ts';
 import { Logger } from '@std/log';
 
 export interface Context {
-  guild: Guild | undefined;
+  guild: Guild;
   channels: {
     interviewsCategory: CategoryChannel;
     interviewFlagsChannel: TextChannel;

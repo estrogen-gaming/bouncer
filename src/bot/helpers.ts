@@ -13,7 +13,7 @@ import { InterviewStatus, UserData } from '../database.ts';
  * @returns *void*
  */
 export const checkUserInterviewStatus = async (bot: BouncerBot, member: GuildMember) => {
-  const existsUser = await bot.database?.get<UserData>(['users', member.user.id]);
+  const existsUser = await bot.database.get<UserData>(['users', member.user.id]);
   if (existsUser?.value && existsUser.value.interviewStatus) {
     bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` has already been interviewed. Ignoring...`);
     return;
@@ -34,7 +34,7 @@ export const checkUserInterviewStatus = async (bot: BouncerBot, member: GuildMem
   } finally {
     const interviewFlagsChannel = bot.context.channels.interviewFlagsChannel;
 
-    await bot.database?.set(
+    await bot.database.set(
       ['users', member.user.id],
       {
         interviewStatus: InterviewStatus.Unapproved,
@@ -42,12 +42,12 @@ export const checkUserInterviewStatus = async (bot: BouncerBot, member: GuildMem
     );
 
     // TODO: Mention the command instead of sending it directly.
-    interviewFlagsChannel?.send(`${member} marked as pending interview. To interview them, use /interview command.`);
+    interviewFlagsChannel.send(`${member} marked as pending interview. To interview them, use /interview command.`);
   }
 };
 
 export const endInterview = async (bot: BouncerBot, member: GuildMember) => {
-  const existsUser = await bot.database?.get<UserData>(['users', member.user.id]);
+  const existsUser = await bot.database.get<UserData>(['users', member.user.id]);
   if (!existsUser?.value || !existsUser.value.interviewStatus) {
     bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` has not been interviewed. Ignoring...`);
     return;
@@ -66,7 +66,7 @@ export const endInterview = async (bot: BouncerBot, member: GuildMember) => {
 
     return;
   } finally {
-    await bot.database?.set(
+    await bot.database.set(
       ['users', member.user.id],
       {
         interviewStatus: InterviewStatus.ApprovedByText,

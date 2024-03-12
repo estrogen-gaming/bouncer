@@ -29,7 +29,7 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
 
     if (
       !guild ||
-      message.guildId !== bot.context.guild?.id ||
+      message.guildId !== bot.context.guild.id ||
       !member ||
       message.channel.type !== ChannelType.GuildText ||
       message.author.bot || !message.channel.nsfw
@@ -71,7 +71,7 @@ export function initialiseContext(bot: BouncerBot, config: Omit<DiscordConfig, '
       `Category for \`interviewsCategoryId\` with the id \`${config.interviewsCategoryId}\` could not be found.`,
     );
     Deno.exit(1);
-  } else if (interviewsCategory?.type !== ChannelType.GuildCategory) {
+  } else if (interviewsCategory.type !== ChannelType.GuildCategory) {
     bot.logger.error(
       `Channel for \`interviewsCategoryId\` with the id \`${config.interviewsCategoryId}\` is not a category.`,
     );
@@ -84,7 +84,7 @@ export function initialiseContext(bot: BouncerBot, config: Omit<DiscordConfig, '
       `Channel for \`interviewFlagsId\` with the id \`${config.channels.interviewFlagsId}\` could not be found.`,
     );
     Deno.exit(1);
-  } else if (interviewFlagsChannel?.type !== ChannelType.GuildText) {
+  } else if (interviewFlagsChannel.type !== ChannelType.GuildText) {
     bot.logger.error(
       `Channel for \`interviewFlagsId\` with the id \`${config.channels.interviewFlagsId}\` is not a text channel.`,
     );
