@@ -19,9 +19,9 @@ export interface Context {
  * Custom {@link Client} class with additional properties.
  */
 export class BouncerBot extends Client {
-  database?: Deno.Kv;
   logger: Logger;
 
+  private _database?: Deno.Kv;
   private _context?: Context;
 
   constructor(config: DiscordConfig, logger: Logger) {
@@ -31,6 +31,18 @@ export class BouncerBot extends Client {
 
     this.token = config.token;
     this.logger = logger;
+  }
+
+  set database(database: Deno.Kv) {
+    this._database = database;
+  }
+
+  get database() {
+    if (!this._database) {
+      throw new Error('Database is not initialized yet.');
+    }
+
+    return this._database;
   }
 
   set context(context: Context) {
