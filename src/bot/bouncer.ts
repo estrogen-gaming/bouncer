@@ -1,7 +1,22 @@
-import { CategoryChannel, Client, GatewayIntentBits, Guild, Role, TextChannel } from '@npm/discord.js';
-import { DiscordConfig } from '../config.ts';
+import {
+  CategoryChannel,
+  Client,
+  Collection,
+  GatewayIntentBits,
+  Guild,
+  Role,
+  SlashCommandBuilder,
+  TextChannel,
+} from '@npm/discord.js';
 import { Logger } from '@std/log';
 
+import { Command } from './commands/index.ts';
+import { DiscordConfig } from '../config.ts';
+
+/**
+ * Context instance of the bot that holds cached values to
+ * make accessing them easier.
+ */
 export interface Context {
   guild: Guild;
   channels: {
@@ -21,6 +36,8 @@ export interface Context {
 export class BouncerBot extends Client {
   logger: Logger;
 
+  commands: Collection<SlashCommandBuilder, Command>;
+
   private _database?: Deno.Kv;
   private _context?: Context;
 
@@ -31,6 +48,7 @@ export class BouncerBot extends Client {
 
     this.token = config.token;
     this.logger = logger;
+    this.commands = new Collection();
   }
 
   set database(database: Deno.Kv) {

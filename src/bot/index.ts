@@ -4,6 +4,7 @@ import { Logger } from '@std/log';
 import { DiscordConfig } from '../config.ts';
 import { checkUserInterviewStatus } from './helpers.ts';
 import { BouncerBot } from './bouncer.ts';
+import { registerCommands, scanCommands } from './commands/index.ts';
 
 /**
  * Starts the Discord bot and handles events.
@@ -18,10 +19,15 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
   await bot.login().then(() => logger.info('Logged in to Discord!'));
   bot.database = database;
 
-  bot.once(Events.ClientReady, (ready) => {
+  bot.once(Events.ClientReady, async (ready) => {
     logger.info(`Bot is ready as ${ready.user.username}!`);
 
+    // Initialise the context after the bot is started
     initialiseContext(bot, config);
+    // Scan all the commands and put them to `BouncerBot.commands` collection
+    await scanCommands(bot);
+    // Register all the commands to the guild
+    await registerCommands(bot);
   });
 
   bot.on(Events.MessageCreate, async (message) => {
@@ -40,6 +46,29 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
     }
 
     await checkUserInterviewStatus(bot, member);
+  });
+
+  bot.on(Events.InteractionCreate, async (interaction) => {
+    if (!interaction.isChatInputCommand()) return;
+
+    // TODO: Don't use `as` here.
+    const interactionClient = interaction.client as BouncerBot;
+
+    const command = interactionClient.commands.find((_, command) => command.name === interaction.commandName);
+    if (!command) return;
+
+    try {
+      await command.execute(interaction);
+    } catch (error) {
+      bot.logger.error(
+        `An unexpected error ocurred while executing the \`${command.command().name}\` slash command interaction: ${error}`,
+      );
+      interaction.reply({
+        content:
+          'An unexpected error ocurred while executing the command. If this keeps happening, please report the issue to the developers.',
+        ephemeral: true,
+      });
+    }
   });
 };
 
