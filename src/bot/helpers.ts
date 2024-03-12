@@ -19,32 +19,31 @@ export const checkUserInterviewStatus = async (bot: BouncerBot, member: GuildMem
     return;
   }
 
-  await member.roles.add(bot.context.roles.pendingInterview)
-    .catch((error) => {
-      if (error instanceof DiscordAPIError && error.code === 50013) {
-        bot.logger.error(
-          `Bot does not have permission to add roles to user \`${member.user.id} (${member.user.globalName})\`.\nAre you sure bot's role is higher than the role you want to add?`,
-        );
-      } else {
-        bot.logger.error(`An unexpected error occurred in \`${checkUserInterviewStatus.name}\` function: ${error}`);
-      }
+  try {
+    await member.roles.add(bot.context.roles.pendingInterview);
+  } catch (error) {
+    if (error instanceof DiscordAPIError && error.code === 50013) {
+      bot.logger.error(
+        `Bot does not have permission to add roles to user \`${member.user.id} (${member.user.globalName})\`.\nAre you sure bot's role is higher than the role you want to add?`,
+      );
+    } else {
+      bot.logger.error(`An unexpected error occurred in \`${checkUserInterviewStatus.name}\` function: ${error}`);
+    }
 
-      return;
-    });
+    return;
+  } finally {
+    const interviewFlagsChannel = bot.context.channels.interviewFlagsChannel;
 
-  //* We've already ensured that this channel is in fact a
-  //* text channel in bots ready event.
-  const interviewFlagsChannel = bot.context.channels.interviewFlagsChannel;
+    await bot.database?.set(
+      ['users', member.user.id],
+      {
+        interviewStatus: InterviewStatus.Unapproved,
+      } satisfies UserData,
+    );
 
-  await bot.database?.set(
-    ['users', member.user.id],
-    {
-      interviewStatus: InterviewStatus.Unapproved,
-    } satisfies UserData,
-  );
-
-  // TODO: Mention the command instead of sending it directly.
-  interviewFlagsChannel?.send(`${member} marked as pending interview. To interview them, use /interview command.`);
+    // TODO: Mention the command instead of sending it directly.
+    interviewFlagsChannel?.send(`${member} marked as pending interview. To interview them, use /interview command.`);
+  }
 };
 
 export const endInterview = async (bot: BouncerBot, member: GuildMember) => {
@@ -54,25 +53,26 @@ export const endInterview = async (bot: BouncerBot, member: GuildMember) => {
     return;
   }
 
-  await member.roles.remove(bot.context.roles.pendingInterview)
-    .catch((error) => {
-      if (error instanceof DiscordAPIError && error.code === 50013) {
-        bot.logger.error(
-          `Bot does not have permission to remove roles from user \`${member.user.id} (${member.user.globalName})\`.\nAre you sure bot's role is higher than the role you want to remove?`,
-        );
-      } else {
-        bot.logger.error(`An unexpected error occurred in \`${endInterview.name}\` function: ${error}`);
-      }
+  try {
+    await member.roles.add(bot.context.roles.nsfwVerified);
+  } catch (error) {
+    if (error instanceof DiscordAPIError && error.code === 50013) {
+      bot.logger.error(
+        `Bot does not have permission to add roles to user \`${member.user.id} (${member.user.globalName})\`.\nAre you sure bot's role is higher than the role you want to add?`,
+      );
+    } else {
+      bot.logger.error(`An unexpected error occurred in \`${endInterview.name}\` function: ${error}`);
+    }
 
-      return;
-    });
-
-  await bot.database?.set(
-    ['users', member.user.id],
-    {
-      interviewStatus: InterviewStatus.ApprovedByText,
-    } satisfies UserData,
-  );
+    return;
+  } finally {
+    await bot.database?.set(
+      ['users', member.user.id],
+      {
+        interviewStatus: InterviewStatus.ApprovedByText,
+      } satisfies UserData,
+    );
+  }
 };
 
 // /**
