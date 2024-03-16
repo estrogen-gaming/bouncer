@@ -1,6 +1,6 @@
 {
   "deno.enable": true,
-  "[typescript][json][jsonc]": {
+  "[typescript][markdown][json][jsonc]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
   },
   "[dockerfile]": {

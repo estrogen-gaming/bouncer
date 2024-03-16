@@ -2,7 +2,7 @@
 
 Public tracker upcoming and in-progress changes for bouncer.
 
-There is no particular order and we cannot guarantee to complete them. 
+There is no particular order and we cannot guarantee to complete them.
 
 ## To Do
 
@@ -11,8 +11,8 @@ There is no particular order and we cannot guarantee to complete them.
 
 ## In Progress
 
-*None*
+_None_
 
 ## Done
 
-*None*
+_None_
