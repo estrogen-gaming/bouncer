@@ -3,7 +3,7 @@ import { CommandInteraction, SlashCommandBuilder } from '@npm/discord.js';
 import { Command } from './index.ts';
 import { BouncerBot, BouncerSlashCommandBuilder } from '../bouncer.ts';
 import { InterviewStatus, InterviewType, UserData } from '../../database.ts';
-import { createInterviewChannel } from '../helpers.ts';
+import { checkInteractionMember, createInterviewChannel } from '../helpers.ts';
 
 export default class Interview implements Command {
   public command(): BouncerSlashCommandBuilder {
@@ -18,27 +18,14 @@ export default class Interview implements Command {
   public async execute(interaction: CommandInteraction) {
     const interactionClient = interaction.client as BouncerBot;
 
-    const user = interaction.options.getUser('user', true);
-    const member = interaction.guild?.members.cache.get(user.id);
-    if (user.bot) {
-      await interaction.reply({
-        content: 'Bots cannot be interviewed.',
-        ephemeral: true,
-      });
-      return;
-    } else if (!member) {
-      await interaction.reply({
-        content: 'Guild member not found.',
-        ephemeral: true,
-      });
-      return;
-    }
+    const member = await checkInteractionMember(interaction);
+    if (!member) return;
 
-    const interviewStatus = await interactionClient.database.get<UserData>(['users', user.id]);
+    const interviewStatus = await interactionClient.database.get<UserData>(['users', member.id]);
     if (!interviewStatus?.value) {
       // TODO: Allow non-pending users to be interviewed?
       await interaction.reply({
-        content: `User \`${user.globalName} (${user.id})\` is not pending for interview.`,
+        content: `User \`${member.user.globalName} (${member.id})\` is not pending for interview.`,
         ephemeral: true,
       });
       return;

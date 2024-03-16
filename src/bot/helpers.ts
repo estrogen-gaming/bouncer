@@ -1,4 +1,11 @@
-import { ChannelType, DiscordAPIError, Guild, type GuildMember, PermissionFlagsBits } from '@npm/discord.js';
+import {
+  ChannelType,
+  CommandInteraction,
+  DiscordAPIError,
+  Guild,
+  type GuildMember,
+  PermissionFlagsBits,
+} from '@npm/discord.js';
 
 import { BouncerBot } from './bouncer.ts';
 import { InterviewStatus, InterviewType, UserData } from '../database.ts';
@@ -139,4 +146,33 @@ export async function createInterviewChannel(bot: BouncerBot, guild: Guild, memb
   });
 
   return createdChannel;
+}
+
+export async function checkInteractionMember(interaction: CommandInteraction) {
+  const user = interaction.options.getUser('user', true);
+  const member = interaction.guild?.members.cache.get(user.id);
+
+  if (user.bot) {
+    await interaction.reply({
+      content: 'Bots cannot be interviewed.',
+      ephemeral: true,
+    });
+    return null;
+  } else if (!member) {
+    await interaction.reply({
+      content: 'Guild member not found.',
+      ephemeral: true,
+    });
+    return null;
+  }
+
+  if (!member) {
+    interaction.reply({
+      content: 'Member not found.',
+      ephemeral: true,
+    });
+    return null;
+  }
+
+  return member;
 }
