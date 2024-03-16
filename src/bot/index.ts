@@ -1,4 +1,4 @@
-import { ChannelType, Events } from '@npm/discord.js';
+import { ChannelType, Events, GuildMemberRoleManager } from '@npm/discord.js';
 import { Logger } from '@std/log';
 
 import { DiscordConfig } from '../config.ts';
@@ -55,6 +55,19 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
     // TODO: Don't use `as` here.
     const interactionClient = interaction.client as BouncerBot;
 
+    if (!(interaction.member?.roles instanceof GuildMemberRoleManager)) {
+      bot.logger.info("Member's roles are not available.");
+      return;
+    }
+
+    if (!interaction.member?.roles.cache.has(bot.context.roles.moderator.id)) {
+      await interaction.reply({
+        content: 'You do not have permission to use this command.',
+        ephemeral: true,
+      });
+      return;
+    }
+
     const command = interactionClient.commands.find((_, command) => command.name === interaction.commandName);
     if (!command) return;
 
@@ -91,6 +104,7 @@ export function initialiseContext(bot: BouncerBot, config: Omit<DiscordConfig, '
   const interviewsCategory = guild.channels.cache.get(config.channels.interviewsCategoryId);
   const interviewFlagsChannel = guild.channels.cache.get(config.channels.interviewFlagsId);
 
+  const moderatorRole = guild.roles.cache.get(config.roles.moderatorId);
   const pendingInterviewRole = guild.roles.cache.get(config.roles.pendingInterviewId);
   const nsfwAccessRole = guild.roles.cache.get(config.roles.nsfwAccessId);
   const nsfwVerifiedRole = guild.roles.cache.get(config.roles.nsfwVerifiedId);
@@ -122,6 +136,13 @@ export function initialiseContext(bot: BouncerBot, config: Omit<DiscordConfig, '
   }
 
   // Check roles
+  if (!moderatorRole) {
+    bot.logger.error(
+      `Role for \`moderatorId\` with the id \`${config.roles.moderatorId}\` could not be found.`,
+    );
+    Deno.exit(1);
+  }
+
   if (!pendingInterviewRole) {
     bot.logger.error(
       `Role for \`pendingInterviewId\` with the id \`${config.roles.pendingInterviewId}\` could not be found.`,
@@ -150,6 +171,7 @@ export function initialiseContext(bot: BouncerBot, config: Omit<DiscordConfig, '
       interviewFlagsChannel,
     },
     roles: {
+      moderator: moderatorRole,
       pendingInterview: pendingInterviewRole,
       nsfwAccess: nsfwAccessRole,
       nsfwVerified: nsfwVerifiedRole,

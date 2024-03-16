@@ -25,6 +25,7 @@ export interface Context {
     interviewFlagsChannel: TextChannel;
   };
   roles: {
+    moderator: Role;
     pendingInterview: Role;
     nsfwAccess: Role;
     nsfwVerified: Role;

@@ -15,6 +15,7 @@ export const DiscordConfigChannelsSchema = object({
 });
 
 export const DiscordConfigRolesSchema = object({
+  moderatorId: numericString(),
   pendingInterviewId: numericString(),
   nsfwAccessId: numericString(),
   nsfwVerifiedId: numericString(),
