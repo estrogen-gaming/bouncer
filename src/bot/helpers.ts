@@ -20,6 +20,8 @@ import { InterviewStatus, InterviewType, UserData } from '../database.ts';
  * @returns *void*
  */
 export const checkUserInterviewStatus = async (bot: BouncerBot, member: GuildMember) => {
+  if (member.roles.cache.has(bot.context.roles.moderator.id)) return;
+
   const existsUser = await bot.database.get<UserData>(['users', member.user.id]);
   if (existsUser?.value?.interview.status === InterviewStatus.Approved) {
     bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` has already been interviewed. Ignoring...`);
