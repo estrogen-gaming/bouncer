@@ -9,16 +9,43 @@ import { DiscordConfig } from '../config.ts';
  * make accessing them easier.
  */
 export interface Context {
+  /**
+   * The guild where the bot operates.
+   */
   guild: Guild;
+  /**
+   * The channels used by the bot.
+   */
   channels: {
+    /**
+     * The category where the interviews will be created.
+     */
     interviewsCategory: CategoryChannel;
+    /**
+     * The channel where the bot will send interview flags.
+     */
     interviewFlagsChannel: TextChannel;
   };
   roles: {
+    /**
+     * The role for server moderators.
+     */
     moderator: Role;
+    /**
+     * The role for pending interviews.
+     */
     pendingInterview: Role;
+    /**
+     * The role for ongoing interviews.
+     */
     ongoingInterview: Role;
+    /**
+     * The role for users approved with text interview.
+     */
     nsfwAccess: Role;
+    /**
+     * The role for users approved with ID interview.
+     */
     nsfwVerified: Role;
   };
 }

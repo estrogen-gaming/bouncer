@@ -10,28 +10,70 @@ const numericString = () =>
   );
 
 export const DiscordConfigChannelsSchema = object({
+  /**
+   * The category ID where the interview channels will be created.
+   */
   interviewsCategoryId: numericString(),
+  /**
+   * The channel ID where the bot will send interview flags.
+   */
   interviewFlagsId: numericString(),
 });
 
 export const DiscordConfigRolesSchema = object({
+  /**
+   * The role ID for the server moderators.
+   */
   moderatorId: numericString(),
+  /**
+   * The role ID for pending interviews.
+   */
   pendingInterviewId: numericString(),
+  /**
+   * The role ID for ongoing interviews.
+   */
   ongoingInterviewId: numericString(),
+  /**
+   * The role ID for users approved with text interview.
+   */
   nsfwAccessId: numericString(),
+  /**
+   * The role ID for users approved with ID interview.
+   */
   nsfwVerifiedId: numericString(),
 });
 
 export const DiscordConfigSchema = object({
+  /**
+   * The bot's token.
+   */
   token: string(),
+  /**
+   * The server id where the bot will operate.
+   */
   serverId: numericString(),
+  /**
+   * Channels configuration.
+   */
   channels: DiscordConfigChannelsSchema,
+  /**
+   * Roles configuration.
+   */
   roles: DiscordConfigRolesSchema,
 });
 
 export const ConfigSchema = object({
+  /**
+   * The database path.
+   */
   database: string().default('data/db'),
+  /**
+   * The log folder path.
+   */
   logFolder: string().optional(),
+  /**
+   * Discord configuration.
+   */
   discord: DiscordConfigSchema,
 });
 
