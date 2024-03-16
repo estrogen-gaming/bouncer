@@ -1,8 +1,8 @@
 import { CommandInteraction, SlashCommandBuilder } from '@npm/discord.js';
+
 import { Command } from './index.ts';
 import { BouncerBot, BouncerSlashCommandBuilder } from '../bouncer.ts';
-import { UserData } from '../../database.ts';
-import { InterviewStatus } from '../../database.ts';
+import { InterviewStatus, InterviewType, UserData } from '../../database.ts';
 import { createInterviewChannel } from '../helpers.ts';
 
 export default class Interview implements Command {
@@ -18,6 +18,7 @@ export default class Interview implements Command {
   public async execute(interaction: CommandInteraction) {
     const interactionClient = interaction.client as BouncerBot;
 
+    // TODO: Find a way to guard this globally
     if (!interaction.guild) {
       await interaction.reply({
         content: 'This command can only be used in a server.',
@@ -28,7 +29,13 @@ export default class Interview implements Command {
 
     const user = interaction.options.getUser('user', true);
     const member = interaction.guild?.members.cache.get(user.id);
-    if (!member) {
+    if (user.bot) {
+      await interaction.reply({
+        content: 'Bots cannot be interviewed.',
+        ephemeral: true,
+      });
+      return;
+    } else if (!member) {
       await interaction.reply({
         content: 'Guild member not found.',
         ephemeral: true,
@@ -37,13 +44,21 @@ export default class Interview implements Command {
     }
 
     const interviewStatus = await interactionClient.database.get<UserData>(['users', user.id]);
-    if (interviewStatus?.value?.interview?.status === InterviewStatus.Ongoing) {
+    if (!interviewStatus?.value) {
+      // TODO: Allow non-pending users to be interviewed?
+      await interaction.reply({
+        content: `User \`${user.globalName} (${user.id})\` is not pending for interview.`,
+        ephemeral: true,
+      });
+      return;
+    }
+    if (interviewStatus.value?.interview?.status === InterviewStatus.Ongoing) {
       await interaction.reply({
         content: `This user is already on an ongoing interview in <#${interviewStatus.value.interview.channelId}>.`,
         ephemeral: true,
       });
       return;
-    } else if (interviewStatus?.value?.interview?.status === InterviewStatus.Approved) {
+    } else if (interviewStatus.value?.interview?.status === InterviewStatus.Approved) {
       await interaction.reply({
         content:
           `This user has already been interviewed and approved in <#${interviewStatus.value.interview.channelId}>.`,
@@ -57,6 +72,7 @@ export default class Interview implements Command {
       ['users', member.id],
       {
         interview: {
+          type: InterviewType.Text,
           status: InterviewStatus.Ongoing,
           channelId: interviewChannel.id,
         },

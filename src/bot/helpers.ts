@@ -1,8 +1,7 @@
-import { DiscordAPIError, Guild, type GuildMember, PermissionFlagsBits } from '@npm/discord.js';
+import { ChannelType, DiscordAPIError, Guild, type GuildMember, PermissionFlagsBits } from '@npm/discord.js';
 
 import { BouncerBot } from './bouncer.ts';
-import { InterviewStatus, UserData } from '../database.ts';
-import { InterviewType } from '../database.ts';
+import { InterviewStatus, InterviewType, UserData } from '../database.ts';
 
 /**
  * Check if user has been interviewed. If not, add them to the pending interview
@@ -57,36 +56,66 @@ export const checkUserInterviewStatus = async (bot: BouncerBot, member: GuildMem
   }
 };
 
-export const endInterview = async (bot: BouncerBot, member: GuildMember, interviewType: InterviewType) => {
-  const existsUser = await bot.database.get<UserData>(['users', member.user.id]);
-  if (existsUser?.value?.interview.status !== InterviewStatus.Ongoing) {
+export const endInterview = async (
+  bot: BouncerBot,
+  member: GuildMember,
+  interview: {
+    type: InterviewType;
+    status: Exclude<InterviewStatus, InterviewStatus.Ongoing | InterviewStatus.Pending>;
+  },
+) => {
+  const userData = await bot.database.get<UserData>(['users', member.user.id]);
+  if (!userData?.value) {
+    bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` is not pending for approval. Ignoring...`);
+    return false;
+  } else if (userData?.value?.interview.status !== InterviewStatus.Ongoing) {
     bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` is not being interviewed. Ignoring...`);
-    return;
+    return false;
   }
 
   try {
-    await member.roles.add(bot.context.roles.nsfwVerified);
+    if (interview.status === InterviewStatus.Approved) {
+      await member.roles.add(bot.context.roles.nsfwVerified);
+    }
+
+    //* `channelId` is guaranteed to be present here, since it's an ongoing interview.
+    const userInterviewChannel = member.guild.channels.cache.get(userData.value.interview.channelId!);
+    if (!userInterviewChannel) {
+      bot.logger.warn(
+        `Interview channel for user \`${member.user.globalName} (${member.user.id})\` not found. Skipping removing user permissions from that channel...`,
+      );
+    } else if (userInterviewChannel.type !== ChannelType.GuildText) {
+      bot.logger.warn(
+        `Interview channel for user \`${member.user.globalName} (${member.user.id})\` is not a text channel. Skipping removing user permissions from that channel...`,
+      );
+    } else {
+      await userInterviewChannel.permissionOverwrites.delete(member.user.id);
+    }
+
+    await member.roles.remove(bot.context.roles.pendingInterview);
   } catch (error) {
     if (error instanceof DiscordAPIError && error.code === 50013) {
       bot.logger.error(
-        `Bot does not have permission to add roles to user \`${member.user.globalName} (${member.user.id})\`.\nAre you sure bot's role is higher than the role you want to add?`,
+        `Bot does not have permission to add/remove roles to user \`${member.user.globalName} (${member.user.id})\`.\nAre you sure bot's role is higher than the role you want to add?`,
       );
     } else {
       bot.logger.error(`An unexpected error occurred in \`${endInterview.name}\` function: ${error}`);
     }
 
-    return;
+    return false;
   } finally {
     await bot.database.set(
       ['users', member.user.id],
       {
         interview: {
-          type: interviewType,
-          status: InterviewStatus.Approved,
+          type: interview.type,
+          status: interview.status,
         },
       } satisfies UserData,
     );
   }
+
+  return true;
 };
 
 /**

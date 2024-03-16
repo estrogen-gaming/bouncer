@@ -41,24 +41,52 @@ export enum InterviewStatus {
 /**
  * Interview data.
  */
-interface Interview {
-  /**
-   * Type of the interview.
-   */
-  type?: InterviewType;
-  /**
-   * Status of the interview.
-   */
-  status: InterviewStatus;
-  /**
-   * Channel ID of the interview.
-   */
-  channelId?: string;
-  /**
-   * Interviewer.
-   */
-  by?: string;
-}
+export type Interview =
+  & {
+    /**
+     * Interviewer.
+     */
+    by?: string;
+  }
+  & (
+    {
+      /**
+       * Status of the interview.
+       */
+      status: InterviewStatus.Ongoing | InterviewStatus.Approved | InterviewStatus.Disapproved;
+      /**
+       * Type of the interview.
+       */
+      type: InterviewType;
+      /**
+       * Channel ID of the interview.
+       */
+      channelId?: string;
+    } | {
+      status: Exclude<
+        InterviewStatus,
+        InterviewStatus.Ongoing | InterviewStatus.Approved | InterviewStatus.Disapproved
+      >;
+      type?: InterviewType;
+      channelId?: string;
+    }
+  );
+
+// /**
+//  * Interview data.
+//  */
+// export interface Interview {
+//   /**
+//    * Type of the interview.
+//    */
+//   type?: InterviewType;
+//
+//   /**
+//    * Channel ID of the interview.
+//    */
+//   channelId?: string;
+//
+// }
 
 /**
  * User data.
