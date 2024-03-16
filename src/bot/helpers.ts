@@ -14,7 +14,7 @@ import { BouncerBot } from './bouncer.ts';
 export const scanCommands = async (bot: BouncerBot) => {
   const commandsPath = join(
     dirname(new URL(import.meta.url).pathname),
-    '.',
+    './commands',
   );
 
   for await (const file of Deno.readDir(commandsPath)) {
