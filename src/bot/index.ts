@@ -114,6 +114,7 @@ export function initialiseContext(bot: BouncerBot, config: Omit<DiscordConfig, '
 
   const moderatorRole = guild.roles.cache.get(config.roles.moderatorId);
   const pendingInterviewRole = guild.roles.cache.get(config.roles.pendingInterviewId);
+  const ongoingInterviewRole = guild.roles.cache.get(config.roles.ongoingInterviewId);
   const nsfwAccessRole = guild.roles.cache.get(config.roles.nsfwAccessId);
   const nsfwVerifiedRole = guild.roles.cache.get(config.roles.nsfwVerifiedId);
 
@@ -158,6 +159,13 @@ export function initialiseContext(bot: BouncerBot, config: Omit<DiscordConfig, '
     Deno.exit(1);
   }
 
+  if (!ongoingInterviewRole) {
+    bot.logger.error(
+      `Role for \`ongoingInterviewId\` with the id \`${config.roles.ongoingInterviewId}\` could not be found.`,
+    );
+    Deno.exit(1);
+  }
+
   if (!nsfwAccessRole) {
     bot.logger.error(
       `Role for \`nsfwAccessId\` with the id \`${config.roles.nsfwAccessId}\` could not be found.`,
@@ -181,6 +189,7 @@ export function initialiseContext(bot: BouncerBot, config: Omit<DiscordConfig, '
     roles: {
       moderator: moderatorRole,
       pendingInterview: pendingInterviewRole,
+      ongoingInterview: ongoingInterviewRole,
       nsfwAccess: nsfwAccessRole,
       nsfwVerified: nsfwVerifiedRole,
     },

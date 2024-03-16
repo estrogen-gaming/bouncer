@@ -27,6 +27,7 @@ export interface Context {
   roles: {
     moderator: Role;
     pendingInterview: Role;
+    ongoingInterview: Role;
     nsfwAccess: Role;
     nsfwVerified: Role;
   };
