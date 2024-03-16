@@ -71,6 +71,8 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
     const command = interactionClient.commands.find((_, command) => command.name === interaction.commandName);
     if (!command) return;
 
+    if (!interaction.guild) return;
+
     try {
       await command.execute(interaction);
     } catch (error) {

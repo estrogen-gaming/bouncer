@@ -18,15 +18,6 @@ export default class Interview implements Command {
   public async execute(interaction: CommandInteraction) {
     const interactionClient = interaction.client as BouncerBot;
 
-    // TODO: Find a way to guard this globally
-    if (!interaction.guild) {
-      await interaction.reply({
-        content: 'This command can only be used in a server.',
-        ephemeral: true,
-      });
-      return;
-    }
-
     const user = interaction.options.getUser('user', true);
     const member = interaction.guild?.members.cache.get(user.id);
     if (user.bot) {
@@ -67,7 +58,7 @@ export default class Interview implements Command {
       return;
     }
 
-    const interviewChannel = await createInterviewChannel(interactionClient, interaction.guild, member);
+    const interviewChannel = await createInterviewChannel(interactionClient, interaction.guild!, member);
     await interactionClient.database.set(
       ['users', member.id],
       {
