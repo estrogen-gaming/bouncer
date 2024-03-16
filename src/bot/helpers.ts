@@ -63,6 +63,36 @@ export const checkUserInterviewStatus = async (bot: BouncerBot, member: GuildMem
   }
 };
 
+export const startInterview = async (
+  bot: BouncerBot,
+  member: GuildMember,
+  interviewType: InterviewType = InterviewType.Text,
+) => {
+  const userData = await bot.database.get<UserData>(['users', member.user.id]);
+  if (!userData?.value) {
+    bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` is not pending for approval. Ignoring...`);
+    return null;
+  } else if (userData.value.interview.status !== InterviewStatus.Pending) {
+    bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` is not pending for interview. Ignoring...`);
+    return null;
+  }
+
+  const interviewChannel = await createInterviewChannel(bot, member.guild, member);
+
+  await bot.database.set(
+    ['users', member.user.id],
+    {
+      interview: {
+        type: interviewType,
+        status: InterviewStatus.Ongoing,
+        channelId: interviewChannel.id,
+      },
+    } satisfies UserData,
+  );
+
+  return interviewChannel;
+};
+
 export const endInterview = async (
   bot: BouncerBot,
   member: GuildMember,

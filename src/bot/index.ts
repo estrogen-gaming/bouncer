@@ -4,7 +4,7 @@ import { Logger } from '@std/log';
 import { DiscordConfig } from '../config.ts';
 import { checkUserInterviewStatus } from './helpers.ts';
 import { BouncerBot } from './bouncer.ts';
-import { registerCommands, scanCommands } from './commands/index.ts';
+import { registerCommands, scanCommands } from './commands/_helpers.ts';
 
 /**
  * Starts the Discord bot and handles events.

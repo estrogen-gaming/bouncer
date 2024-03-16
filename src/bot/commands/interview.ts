@@ -1,9 +1,9 @@
 import { CommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from '@npm/discord.js';
 
-import { Command } from './index.ts';
-import { BouncerBot, BouncerSlashCommandBuilder } from '../bouncer.ts';
-import { InterviewStatus, InterviewType, UserData } from '../../database.ts';
-import { checkInteractionMember, createInterviewChannel } from '../helpers.ts';
+import { BouncerSlashCommandBuilder, Command } from './_index.ts';
+import { BouncerBot } from '../bouncer.ts';
+import { InterviewStatus, UserData } from '../../database.ts';
+import { checkInteractionMember, startInterview } from '../helpers.ts';
 
 export default class Interview implements Command {
   public command(): BouncerSlashCommandBuilder {
@@ -46,18 +46,14 @@ export default class Interview implements Command {
       return;
     }
 
-    // TODO: Create helper for this.
-    const interviewChannel = await createInterviewChannel(interactionClient, interaction.guild!, member);
-    await interactionClient.database.set(
-      ['users', member.id],
-      {
-        interview: {
-          type: InterviewType.Text,
-          status: InterviewStatus.Ongoing,
-          channelId: interviewChannel.id,
-        },
-      } satisfies UserData,
-    );
+    const interviewChannel = await startInterview(interactionClient, member);
+    if (!interviewChannel) {
+      await interaction.reply({
+        content: `Failed to create interview channel for ${member}. Check logs for possible errors.`,
+        ephemeral: true,
+      });
+      return;
+    }
 
     await interaction.reply({
       content: `Interview channel ${interviewChannel} has been created for ${member}.`,

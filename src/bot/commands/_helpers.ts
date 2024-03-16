@@ -1,24 +1,9 @@
 import { dirname, join } from '@std/path';
 
-import { CommandInteraction, REST, Routes } from '@npm/discord.js';
+import { REST, Routes } from '@npm/discord.js';
 
-import { BouncerBot, BouncerSlashCommandBuilder } from '../bouncer.ts';
-
-/**
- * Abstract class for slash commands.
- */
-export abstract class Command {
-  /**
-   * @returns the slash command builder for the slash command.
-   */
-  public abstract command(): BouncerSlashCommandBuilder;
-  /**
-   * Executor of the slash command.
-   *
-   * @param interaction Command interaction instance.
-   */
-  public abstract execute(interaction: CommandInteraction): Promise<void>;
-}
+import { Command } from './_index.ts';
+import { BouncerBot } from '../bouncer.ts';
 
 /**
  * Scan all the commands in the current directory and
@@ -33,7 +18,7 @@ export const scanCommands = async (bot: BouncerBot) => {
   );
 
   for await (const file of Deno.readDir(commandsPath)) {
-    if (!file.name.endsWith('.ts') || file.name === 'index.ts') continue;
+    if (!file.name.endsWith('.ts') || file.name.startsWith('_')) continue;
 
     const commandImport = await import(join(commandsPath, file.name));
     const command: Command = new commandImport.default();

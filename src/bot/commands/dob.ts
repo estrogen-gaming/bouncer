@@ -1,7 +1,6 @@
 import { CommandInteraction, PermissionFlagsBits, SlashCommandBuilder, time } from '@npm/discord.js';
 
-import { BouncerSlashCommandBuilder } from '../bouncer.ts';
-import { Command } from './index.ts';
+import { BouncerSlashCommandBuilder, Command } from './_index.ts';
 
 export default class DateOfBirth implements Command {
   public command(): BouncerSlashCommandBuilder {

@@ -1,17 +1,7 @@
-import {
-  CategoryChannel,
-  Client,
-  Collection,
-  GatewayIntentBits,
-  Guild,
-  Role,
-  SlashCommandBuilder,
-  SlashCommandSubcommandsOnlyBuilder,
-  TextChannel,
-} from '@npm/discord.js';
+import { CategoryChannel, Client, Collection, GatewayIntentBits, Guild, Role, TextChannel } from '@npm/discord.js';
 import { Logger } from '@std/log';
 
-import { Command } from './commands/index.ts';
+import { BouncerSlashCommandBuilder, Command } from './commands/_index.ts';
 import { DiscordConfig } from '../config.ts';
 
 /**
@@ -32,11 +22,6 @@ export interface Context {
     nsfwVerified: Role;
   };
 }
-
-export type BouncerSlashCommandBuilder =
-  | SlashCommandBuilder
-  | SlashCommandSubcommandsOnlyBuilder
-  | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>;
 
 /**
  * Custom {@link Client} class with additional properties.
