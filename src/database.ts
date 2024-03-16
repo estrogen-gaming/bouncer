@@ -63,30 +63,23 @@ export type Interview =
        */
       channelId?: string;
     } | {
+      /**
+       * Status of the interview.
+       */
       status: Exclude<
         InterviewStatus,
         InterviewStatus.Ongoing | InterviewStatus.Approved | InterviewStatus.Disapproved
       >;
+      /**
+       * Type of the interview.
+       */
       type?: InterviewType;
+      /**
+       * Channel ID of the interview.
+       */
       channelId?: string;
     }
   );
-
-// /**
-//  * Interview data.
-//  */
-// export interface Interview {
-//   /**
-//    * Type of the interview.
-//    */
-//   type?: InterviewType;
-//
-//   /**
-//    * Channel ID of the interview.
-//    */
-//   channelId?: string;
-//
-// }
 
 /**
  * User data.

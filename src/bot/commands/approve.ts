@@ -29,14 +29,14 @@ export default class Approve implements Command {
     });
     if (!endInterviewStatus) {
       await interaction.reply({
-        content: `User \`${member.user.globalName} (${member.user.id})\` is not being interviewed.`,
+        content: `${member} is not being interviewed.`,
         ephemeral: true,
       });
       return;
     }
 
     await interaction.reply({
-      content: `User \`${member.user.globalName} (${member.user.id})\` has been approved.`,
+      content: `${member} has been approved.`,
       ephemeral: true,
     });
   }

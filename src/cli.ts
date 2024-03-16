@@ -28,7 +28,6 @@ export const runCLI = async () => {
   }
 
   const config = await parseConfig(configFilePath);
-
   if (config.logFolder) {
     logger = await customLogger(config.logFolder);
   }

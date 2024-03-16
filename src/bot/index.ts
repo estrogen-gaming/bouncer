@@ -42,7 +42,13 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
       message.author.bot || !message.channel.nsfw
     ) return;
 
-    if (message.member?.roles.cache.hasAny(bot.context.roles.nsfwAccess.id, bot.context.roles.nsfwVerified.id)) {
+    if (
+      message.member?.roles.cache.hasAny(
+        bot.context.roles.moderator.id,
+        bot.context.roles.nsfwAccess.id,
+        bot.context.roles.nsfwVerified.id,
+      )
+    ) {
       return;
     }
 

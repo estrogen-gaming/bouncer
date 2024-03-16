@@ -25,26 +25,27 @@ export default class Interview implements Command {
     if (!interviewStatus?.value) {
       // TODO: Allow non-pending users to be interviewed?
       await interaction.reply({
-        content: `User \`${member.user.globalName} (${member.id})\` is not pending for interview.`,
+        content: `${member} is not pending for interview.`,
         ephemeral: true,
       });
       return;
     }
     if (interviewStatus.value?.interview?.status === InterviewStatus.Ongoing) {
       await interaction.reply({
-        content: `This user is already on an ongoing interview in <#${interviewStatus.value.interview.channelId}>.`,
+        content: `${member} is already on an ongoing interview in <#${interviewStatus.value.interview.channelId}>.`,
         ephemeral: true,
       });
       return;
     } else if (interviewStatus.value?.interview?.status === InterviewStatus.Approved) {
       await interaction.reply({
         content:
-          `This user has already been interviewed and approved in <#${interviewStatus.value.interview.channelId}>.`,
+          `${member} has already been interviewed and approved in <#${interviewStatus.value.interview.channelId}>.`,
         ephemeral: true,
       });
       return;
     }
 
+    // TODO: Create helper for this.
     const interviewChannel = await createInterviewChannel(interactionClient, interaction.guild!, member);
     await interactionClient.database.set(
       ['users', member.id],
@@ -58,7 +59,7 @@ export default class Interview implements Command {
     );
 
     await interaction.reply({
-      content: `Interview channel ${interviewChannel} has been created for user ${member}.`,
+      content: `Interview channel ${interviewChannel} has been created for ${member}.`,
       ephemeral: true,
     });
 
