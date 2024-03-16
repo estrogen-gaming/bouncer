@@ -1,10 +1,9 @@
 import { CommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from '@npm/discord.js';
 
 import { BouncerSlashCommandBuilder, Command } from './_index.ts';
-import { endInterview } from '../helpers.ts';
+import { checkInteractionMember, endInterview } from './_helpers.ts';
 import { InterviewStatus, InterviewType } from '../../database.ts';
 import { BouncerBot } from '../bouncer.ts';
-import { checkInteractionMember } from '../helpers.ts';
 
 export default class Approve implements Command {
   public command(): BouncerSlashCommandBuilder {
