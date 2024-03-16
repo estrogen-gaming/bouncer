@@ -63,7 +63,7 @@ export default class Interview implements Command {
       } satisfies UserData,
     );
 
-    interaction.reply({
+    await interaction.reply({
       content: `Interview channel ${interviewChannel} has been created for user ${member}.`,
       ephemeral: true,
     });
