@@ -1,7 +1,7 @@
 import { CommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from '@npm/discord.js';
 
-import { BouncerSlashCommandBuilder, Command } from './_index.ts';
-import { checkInteractionMember, endInterview } from './_helpers.ts';
+import { BouncerSlashCommandBuilder, Command } from './@index.ts';
+import { checkInteractionMember, endInterview } from './@helpers.ts';
 import { InterviewStatus, InterviewType } from '../../database.ts';
 import { BouncerBot } from '../bouncer.ts';
 

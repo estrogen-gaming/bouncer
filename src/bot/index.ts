@@ -2,7 +2,7 @@ import { ChannelType, Events, GuildMemberRoleManager } from '@npm/discord.js';
 import { Logger } from '@std/log';
 
 import { DiscordConfig } from '../config.ts';
-import { checkUserInterviewStatus } from './commands/_helpers.ts';
+import { checkUserInterviewStatus } from './commands/@helpers.ts';
 import { BouncerBot } from './bouncer.ts';
 import { registerCommands, scanCommands } from './helpers.ts';
 

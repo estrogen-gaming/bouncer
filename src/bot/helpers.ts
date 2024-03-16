@@ -2,7 +2,7 @@ import { dirname, join } from '@std/path';
 
 import { REST, Routes } from '@npm/discord.js';
 
-import { Command } from './commands/_index.ts';
+import { Command } from './commands/@index.ts';
 import { BouncerBot } from './bouncer.ts';
 
 /**
@@ -18,7 +18,7 @@ export const scanCommands = async (bot: BouncerBot) => {
   );
 
   for await (const file of Deno.readDir(commandsPath)) {
-    if (!file.name.endsWith('.ts') || file.name.startsWith('_')) continue;
+    if (!file.name.endsWith('.ts') || file.name.startsWith('@')) continue;
 
     const commandImport = await import(join(commandsPath, file.name));
     const command: Command = new commandImport.default();

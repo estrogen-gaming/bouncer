@@ -1,7 +1,7 @@
 import { CategoryChannel, Client, Collection, GatewayIntentBits, Guild, Role, TextChannel } from '@npm/discord.js';
 import { Logger } from '@std/log';
 
-import { BouncerSlashCommandBuilder, Command } from './commands/_index.ts';
+import { BouncerSlashCommandBuilder, Command } from './commands/@index.ts';
 import { DiscordConfig } from '../config.ts';
 
 /**
