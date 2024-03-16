@@ -1,6 +1,6 @@
 import { dirname, join } from '@std/path';
 
-import { CommandInteraction, REST, Routes, SlashCommandBuilder } from '@npm/discord.js';
+import { CommandInteraction, REST, Routes } from '@npm/discord.js';
 
 import { BouncerBot, BouncerSlashCommandBuilder } from '../bouncer.ts';
 

@@ -17,6 +17,7 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
   const bot = new BouncerBot(config, logger);
 
   await bot.login().then(() => logger.info('Logged in to Discord!'));
+
   bot.database = database;
 
   bot.once(Events.ClientReady, async (ready) => {

@@ -2,6 +2,7 @@ import { DiscordAPIError, Guild, type GuildMember, PermissionFlagsBits } from '@
 
 import { BouncerBot } from './bouncer.ts';
 import { InterviewStatus, UserData } from '../database.ts';
+import { InterviewType } from '../database.ts';
 
 /**
  * Check if user has been interviewed. If not, add them to the pending interview
@@ -14,8 +15,16 @@ import { InterviewStatus, UserData } from '../database.ts';
  */
 export const checkUserInterviewStatus = async (bot: BouncerBot, member: GuildMember) => {
   const existsUser = await bot.database.get<UserData>(['users', member.user.id]);
-  if (existsUser?.value && existsUser.value.interviewStatus) {
+  if (existsUser?.value?.interview.status === InterviewStatus.Approved) {
     bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` has already been interviewed. Ignoring...`);
+    return;
+  } else if (existsUser?.value?.interview.status === InterviewStatus.Ongoing) {
+    bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` is on an ongoing interview. Ignoring...`);
+    return;
+  } else if (existsUser?.value?.interview.status === InterviewStatus.Disapproved) {
+    bot.logger.warn(
+      `User \`${member.user.globalName} (${member.user.id})\` has been disapproved in an interview. Ignoring...`,
+    );
     return;
   }
 
@@ -37,7 +46,9 @@ export const checkUserInterviewStatus = async (bot: BouncerBot, member: GuildMem
     await bot.database.set(
       ['users', member.user.id],
       {
-        interviewStatus: InterviewStatus.Unapproved,
+        interview: {
+          status: InterviewStatus.Pending,
+        },
       } satisfies UserData,
     );
 
@@ -46,10 +57,10 @@ export const checkUserInterviewStatus = async (bot: BouncerBot, member: GuildMem
   }
 };
 
-export const endInterview = async (bot: BouncerBot, member: GuildMember) => {
+export const endInterview = async (bot: BouncerBot, member: GuildMember, interviewType: InterviewType) => {
   const existsUser = await bot.database.get<UserData>(['users', member.user.id]);
-  if (!existsUser?.value || !existsUser.value.interviewStatus) {
-    bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` has not been interviewed. Ignoring...`);
+  if (existsUser?.value?.interview.status !== InterviewStatus.Ongoing) {
+    bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` is not being interviewed. Ignoring...`);
     return;
   }
 
@@ -69,7 +80,10 @@ export const endInterview = async (bot: BouncerBot, member: GuildMember) => {
     await bot.database.set(
       ['users', member.user.id],
       {
-        interviewStatus: InterviewStatus.ApprovedByText,
+        interview: {
+          type: interviewType,
+          status: InterviewStatus.Approved,
+        },
       } satisfies UserData,
     );
   }
