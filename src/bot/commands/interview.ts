@@ -1,4 +1,4 @@
-import { CommandInteraction, SlashCommandBuilder } from '@npm/discord.js';
+import { CommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from '@npm/discord.js';
 
 import { Command } from './index.ts';
 import { BouncerBot, BouncerSlashCommandBuilder } from '../bouncer.ts';
@@ -12,7 +12,8 @@ export default class Interview implements Command {
       .setDescription('Interview an user.')
       .addUserOption((builder) => {
         return builder.setName('user').setDescription('The user to interview.').setRequired(true);
-      });
+      })
+      .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild);
   }
 
   public async execute(interaction: CommandInteraction) {

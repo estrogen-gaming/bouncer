@@ -1,4 +1,4 @@
-import { CommandInteraction, SlashCommandBuilder } from '@npm/discord.js';
+import { CommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from '@npm/discord.js';
 
 import { Command } from './index.ts';
 import { endInterview } from '../helpers.ts';
@@ -13,7 +13,8 @@ export default class Approve implements Command {
       .setDescription('Approve an user interview.')
       .addUserOption((builder) => {
         return builder.setName('user').setDescription('The user to approve.').setRequired(true);
-      });
+      })
+      .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild);
   }
 
   public async execute(interaction: CommandInteraction) {
