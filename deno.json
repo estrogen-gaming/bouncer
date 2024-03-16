@@ -11,12 +11,12 @@
   "imports": {
     "@npm/discord.js": "npm:discord.js@^14.14.1",
     "@npm/zod-validation-error": "npm:zod-validation-error@^3.0.3",
-    "@std/cli": "jsr:@std/cli@^0.219.0",
-    "@std/datetime": "jsr:@std/datetime@^0.219.0",
-    "@std/fmt/colors": "jsr:@std/fmt@^0.219.0/colors",
-    "@std/log": "jsr:@std/log@^0.219.0",
-    "@std/path": "jsr:@std/path@^0.219.0",
-    "@std/yaml": "jsr:@std/yaml@^0.219.0",
+    "@std/cli": "jsr:@std/cli@^0.220.1",
+    "@std/datetime": "jsr:@std/datetime@^0.220.1",
+    "@std/fmt/colors": "jsr:@std/fmt@^0.220.1/colors",
+    "@std/log": "jsr:@std/log@^0.220.1",
+    "@std/path": "jsr:@std/path@^0.220.1",
+    "@std/yaml": "jsr:@std/yaml@^0.220.1",
     "@x/zod": "https://deno.land/x/zod@v3.22.4/mod.ts"
   }
 }
