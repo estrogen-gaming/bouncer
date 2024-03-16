@@ -2,5 +2,11 @@
   "deno.enable": true,
   "[typescript][json][jsonc]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "[dockerfile]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-docker",
+    "editor.quickSuggestions": {
+      "strings": true
+    }
   }
 }
