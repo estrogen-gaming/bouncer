@@ -79,6 +79,22 @@ export const startInterview = async (
 
   const interviewChannel = await createInterviewChannel(bot, member.guild, member);
 
+  // TODO: Create a helper for this.
+  try {
+    await member.roles.add(bot.context.roles.ongoingInterview);
+    await member.roles.remove(bot.context.roles.pendingInterview);
+  } catch (error) {
+    if (error instanceof DiscordAPIError && error.code === 50013) {
+      bot.logger.error(
+        `Bot does not have permission to add roles to user \`${member.user.globalName} (${member.user.id})\`.\nAre you sure bot's role is higher than the role you want to add?`,
+      );
+    } else {
+      bot.logger.error(`An unexpected error occurred in \`${startInterview.name}\` function: ${error}`);
+    }
+
+    return null;
+  }
+
   await bot.database.set(
     ['users', member.user.id],
     {
@@ -112,7 +128,13 @@ export const endInterview = async (
 
   try {
     if (interview.status === InterviewStatus.Approved) {
-      await member.roles.add(bot.context.roles.nsfwVerified);
+      if (interview.type === InterviewType.Text) {
+        await member.roles.add(bot.context.roles.nsfwAccess);
+      } else {
+        await member.roles.add(bot.context.roles.nsfwVerified);
+      }
+    } else {
+      await member.roles.remove(bot.context.roles.ongoingInterview);
     }
 
     //* `channelId` is guaranteed to be present here, since it's an ongoing interview.
@@ -191,14 +213,6 @@ export async function checkInteractionMember(interaction: CommandInteraction) {
   } else if (!member) {
     await interaction.reply({
       content: 'Guild member not found.',
-      ephemeral: true,
-    });
-    return null;
-  }
-
-  if (!member) {
-    interaction.reply({
-      content: 'Member not found.',
       ephemeral: true,
     });
     return null;
