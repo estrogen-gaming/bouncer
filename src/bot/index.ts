@@ -83,11 +83,11 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
       await command.execute(interaction);
     } catch (error) {
       bot.logger.error(
-        `An unexpected error ocurred while executing the \`${command.command().name}\` slash command interaction: ${error}`,
+        `An unexpected error occurred while executing the \`${command.command().name}\` slash command interaction: ${error}`,
       );
       interaction.reply({
         content:
-          'An unexpected error ocurred while executing the command. If this keeps happening, please report the issue to the developers.',
+          'An unexpected error occurred while executing the command. If this keeps happening, please report the issue to the developers.',
         ephemeral: true,
       });
     }

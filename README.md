@@ -23,7 +23,7 @@ docker run -v /path/to/your/config.yaml:/app/config.yaml:r -v /path/to/bouncer/d
 
 ### Native Application
 
-Bouncer can be compiled as a native application with `deno compile`. Make sure to use needed permission and unstable flags for successfull and working executable.
+Bouncer can be compiled as a native application with `deno compile`. Make sure to use needed permission and unstable flags for successful and working executable.
 
 ### Run with Deno
 
@@ -59,7 +59,7 @@ Bouncer can be ran with `deno task start`.
 
 > [!TIP]
 >
-> To get more detailed information about those fields, [src/config.ts](src/config.ts) file can be checked. It contains detailed comments and informations about all configuration fields.
+> To get more detailed information about those fields, [src/config.ts](src/config.ts) file can be checked. It contains detailed comments and information about all configuration fields.
 
 ```yaml
 database: data/db # Folder to save database files in
