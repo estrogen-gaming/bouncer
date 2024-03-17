@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  push:
+    tags: '*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create a new release with release notes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = context.ref.split('/').at(-1);
+            github.rest.repos.createRelease({
+              name: `Release ${tag}`,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tag,
+              generate_release_notes: true
+            })
