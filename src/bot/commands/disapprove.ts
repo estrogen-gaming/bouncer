@@ -2,7 +2,7 @@ import { CommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from '@n
 
 import { BouncerSlashCommandBuilder, Command } from './@index.ts';
 import { checkInteractionMember, endInterview } from './@helpers.ts';
-import { InterviewStatus, InterviewType } from '../../database.ts';
+import { InterviewStatus } from '../../database.ts';
 import { BouncerBot } from '../bouncer.ts';
 
 export default class Disapprove implements Command {
