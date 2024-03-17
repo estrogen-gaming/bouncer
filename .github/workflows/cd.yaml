@@ -3,7 +3,7 @@ run-name: ${{ inputs.reason }}
 
 on:
   push:
-    tags: '*.*.*'
+    tags: v*.*.*
   workflow_run:
     workflows: CI
     types: completed
