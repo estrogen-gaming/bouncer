@@ -11,7 +11,10 @@ export default class Disapprove implements Command {
       .setName('disapprove')
       .setDescription('Disapprove an user interview.')
       .addUserOption((builder) => {
-        return builder.setName('user').setDescription('The user to disapprove.').setRequired(true);
+        return builder
+          .setName('user')
+          .setDescription('The user to disapprove.')
+          .setRequired(true);
       })
       .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild);
   }
@@ -25,7 +28,6 @@ export default class Disapprove implements Command {
     // TODO: This is not good.
     const endInterviewStatus = await endInterview(interactionClient, member, {
       status: InterviewStatus.Disapproved,
-      type: InterviewType.Text,
     });
     if (!endInterviewStatus) {
       await interaction.reply({

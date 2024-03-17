@@ -25,7 +25,6 @@ export default class Approve implements Command {
     // TODO: This is not good.
     const endInterviewStatus = await endInterview(interactionClient, member, {
       status: InterviewStatus.Approved,
-      type: InterviewType.Text,
     });
     if (!endInterviewStatus) {
       await interaction.reply({

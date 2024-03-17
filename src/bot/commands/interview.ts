@@ -2,7 +2,7 @@ import { CommandInteraction, PermissionFlagsBits, SlashCommandBuilder } from '@n
 
 import { BouncerSlashCommandBuilder, Command } from './@index.ts';
 import { BouncerBot } from '../bouncer.ts';
-import { InterviewStatus, UserData } from '../../database.ts';
+import { InterviewStatus, InterviewType, UserData } from '../../database.ts';
 import { checkInteractionMember, startInterview } from './@helpers.ts';
 
 export default class Interview implements Command {
@@ -13,6 +13,12 @@ export default class Interview implements Command {
       .addUserOption((builder) => {
         return builder.setName('user').setDescription('The user to interview.').setRequired(true);
       })
+      .addStringOption((builder) => {
+        return builder
+          .setName('interview_type')
+          .setDescription('Type of the interview.')
+          .addChoices({ name: 'Text', value: 'text' }, { name: 'ID', value: 'id' });
+      })
       .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild);
   }
 
@@ -21,6 +27,15 @@ export default class Interview implements Command {
 
     const member = await checkInteractionMember(interaction);
     if (!member) return;
+
+    let interviewType: InterviewType;
+
+    const interviewInput = interaction.options.get('interview_type', true).value;
+    if (interviewInput === 'id') {
+      interviewType = InterviewType.Id;
+    } else {
+      interviewType = InterviewType.Text;
+    }
 
     const interviewStatus = await interactionClient.database.get<UserData>(['users', member.id]);
     if (!interviewStatus?.value) {
@@ -46,7 +61,7 @@ export default class Interview implements Command {
       return;
     }
 
-    const interviewChannel = await startInterview(interactionClient, member);
+    const interviewChannel = await startInterview(interactionClient, member, interviewType);
     if (!interviewChannel) {
       await interaction.reply({
         content: `Failed to create interview channel for ${member}. Check logs for possible errors.`,

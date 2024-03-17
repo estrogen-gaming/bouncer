@@ -79,9 +79,11 @@ export const startInterview = async (
     return null;
   }
 
-  bot.logger.info(`Starting interview for user \`${member.user.globalName} (${member.user.id})\`.`);
+  bot.logger.info(
+    `Starting \`${interviewType}\` type interview for user \`${member.user.globalName} (${member.user.id})\`.`,
+  );
 
-  const interviewChannel = await createInterviewChannel(bot, member.guild, member);
+  const interviewChannel = await createInterviewChannel(bot, member.guild, member, interviewType);
 
   // TODO: Create a helper for this.
   try {
@@ -121,7 +123,6 @@ export const endInterview = async (
   bot: BouncerBot,
   member: GuildMember,
   interview: {
-    type: InterviewType;
     status: InterviewStatus.Approved | InterviewStatus.Disapproved;
   },
 ) => {
@@ -137,13 +138,7 @@ export const endInterview = async (
   bot.logger.info(`Ending interview for user \`${member.user.globalName} (${member.user.id})\`.`);
 
   try {
-    if (interview.status === InterviewStatus.Approved) {
-      if (interview.type === InterviewType.Text) {
-        await member.roles.add(bot.context.roles.nsfwAccess);
-      } else {
-        await member.roles.add(bot.context.roles.nsfwVerified);
-      }
-    } else {
+    if (interview.status === InterviewStatus.Disapproved) {
       await member.roles.remove(bot.context.roles.ongoingInterview);
     }
 
@@ -177,7 +172,6 @@ export const endInterview = async (
       ['users', member.user.id],
       {
         interview: {
-          type: interview.type,
           status: interview.status,
         },
       } satisfies UserData,
@@ -193,9 +187,22 @@ export const endInterview = async (
  * Create an interview channel in the `config.interviewsCategory`
  * for the user.
  */
-export async function createInterviewChannel(bot: BouncerBot, guild: Guild, member: GuildMember) {
+export async function createInterviewChannel(
+  bot: BouncerBot,
+  guild: Guild,
+  member: GuildMember,
+  interviewType: InterviewType = InterviewType.Text,
+) {
+  let channelName = `interview-`;
+  if (interviewType === InterviewType.Text) {
+    channelName += `text-`;
+  } else {
+    channelName += `id-`;
+  }
+  channelName += member.user.id;
+
   const createdChannel = await guild.channels.create({
-    name: `verification-interview-${member.user.id}`,
+    name: channelName,
     parent: bot.context.channels.interviewsCategory,
     permissionOverwrites: [
       {

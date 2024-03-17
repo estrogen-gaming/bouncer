@@ -57,7 +57,7 @@ export type Interview =
       /**
        * Type of the interview.
        */
-      type: InterviewType;
+      type?: InterviewType;
       /**
        * Channel ID of the interview.
        */
