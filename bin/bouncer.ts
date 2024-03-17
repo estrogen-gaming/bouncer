@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-env=CONFIG_FILE,DEBUG --allow-read --allow-write
+#!/usr/bin/env -S deno run --allow-env --allow-net --allow-read --allow-write --unstable-kv
 
 if (import.meta.main) {
   const { runCLI } = await import('../src/cli.ts');
