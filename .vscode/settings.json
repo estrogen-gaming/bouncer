@@ -1,6 +1,6 @@
 {
   "deno.enable": true,
-  "[typescript][markdown][json][jsonc]": {
+  "[typescript][json][jsonc]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
   },
   "[dockerfile]": {
@@ -8,5 +8,8 @@
     "editor.quickSuggestions": {
       "strings": true
     }
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }

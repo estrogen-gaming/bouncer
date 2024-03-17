@@ -2,7 +2,8 @@
   "fmt": {
     "lineWidth": 120,
     "semiColons": true,
-    "singleQuote": true
+    "singleQuote": true,
+    "exclude": ["*.md"]
   },
   "tasks": {
     "start": "deno run --allow-env --allow-net --allow-read --allow-write --unstable-kv bin/bouncer.ts",

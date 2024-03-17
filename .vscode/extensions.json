@@ -1,6 +1,7 @@
 {
   "recommendations": [
     "denoland.vscode-deno",
-    "ms-azuretools.vscode-docker"
+    "ms-azuretools.vscode-docker",
+    "esbenp.prettier-vscode"
   ]
 }
