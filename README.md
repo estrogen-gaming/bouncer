@@ -9,13 +9,13 @@ Grant your users access to NSFW by interviewing them.
 
 ### Docker/Podman/Etc.
 
-Bouncer is [published as a Container image on GitHub Container Registry](https://github.com/aronson/bouncer/pkgs/container/bouncer) and can be ran with following command:
+Bouncer is [published as a Container image on GitHub Container Registry](https://github.com/aronson/bouncer/pkgs/container/bouncer) and can be run with the following command:
 
 ```sh
 docker run ghcr.io/aronson/bounccer
 ```
 
-Bouncer have `config.yaml, `data`and`logs`mount points on`/app` path, and they can be mounted to host or a volume with following command:
+Bouncer have `config.yaml`, `data` and `logs` mount points on `/app` path, and they can be mounted to a host or a volume with the following command:
 
 ```sh
 docker run -v /path/to/your/config.yaml:/app/config.yaml:r -v /path/to/bouncer/data:/app/data -v /path/to/bouncer/logs:/app/logs ghcr.io/aronson/bouncer
@@ -27,7 +27,7 @@ Bouncer can be compiled as a native application with `deno compile`. Make sure t
 
 ### Run with Deno
 
-Bouncer can be ran with `deno task start`.
+Bouncer can be run with `deno task start`.
 
 ## How it Works
 
@@ -35,10 +35,10 @@ Bouncer can be ran with `deno task start`.
 >
 > Referenced configuration fields and their purposes can be found at [Configuration](#configuration) section.
 
-1. When user sends a message to a channel they're not yet allowed to, they're given the role with specified
+1. When a user sends a message to a channel they're not yet allowed to, they're given the role with specified
    `pendingInterviewId`.
 2. After that, bouncer sends a message to specified `interviewFlagsId` channel to announce moderators about this.
-3. When moderators specified with `moderatorId` role id wants to interview an user, they use `/interview` command to
+3. When moderators specified with `moderatorId` role id wants to interview a user, they use `/interview` command to
    interview them.
    - There are two types of interview: Text and ID.
 4. When a moderator starts to interview a user, they're given the role with specified `ongoingInterviewId` and
