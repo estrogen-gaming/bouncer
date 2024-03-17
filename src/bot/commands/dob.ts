@@ -45,7 +45,7 @@ export default class DateOfBirth implements Command {
 
     if (month === 2 && !isLeapYear(year) && day > 28) {
       await interaction.reply({
-        content: 'Invalid day specified for non-leap year.',
+        content: `Invalid day specified for non-leap year February. It should be between 1 and 28.`,
         ephemeral: true,
       });
       return;
