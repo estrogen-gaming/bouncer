@@ -77,3 +77,9 @@ discord:
     nsfwAccessId: # Role of the users who are verified by text and have access to NSFW channels
     nsfwVerifiedId: # Role of the users who are verified by ID and have access to special NSFW channels
 ```
+
+## Development
+
+Bouncer is made using Deno, and least supported version 1.41.0.
+
+Bouncer uses [discord.js](https://discord.js.org) for Discord intereaction, [zod](https://zod.dev) for config schema validation, [zod-validation-error](https://github.com/causaly/zod-validation-error) for pretty zod errors, and [Deno Standard Library](https://deno.land/std) extensively for filesystem, i/o, parsing and many other operations.
