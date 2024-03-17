@@ -58,6 +58,8 @@ export const checkUserInterviewStatus = async (bot: BouncerBot, member: GuildMem
       } satisfies UserData,
     );
 
+    bot.logger.info(`User \`${member.user.globalName} (${member.user.id})\` is marked as pending interview.`);
+
     // TODO: Mention the command instead of sending it directly.
     interviewFlagsChannel.send(`${member} marked as pending interview. To interview them, use /interview command.`);
   }
@@ -76,6 +78,8 @@ export const startInterview = async (
     bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` is not pending for interview. Ignoring...`);
     return null;
   }
+
+  bot.logger.info(`Starting interview for user \`${member.user.globalName} (${member.user.id})\`.`);
 
   const interviewChannel = await createInterviewChannel(bot, member.guild, member);
 
@@ -106,6 +110,10 @@ export const startInterview = async (
     } satisfies UserData,
   );
 
+  bot.logger.info(
+    `Started interview for \`${member.user.globalName} (${member.user.id})\` in \`${interviewChannel.name} (${interviewChannel.id})\`.`,
+  );
+
   return interviewChannel;
 };
 
@@ -125,6 +133,8 @@ export const endInterview = async (
     bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` is not being interviewed. Ignoring...`);
     return false;
   }
+
+  bot.logger.info(`Ending interview for user \`${member.user.globalName} (${member.user.id})\`.`);
 
   try {
     if (interview.status === InterviewStatus.Approved) {
@@ -172,6 +182,8 @@ export const endInterview = async (
         },
       } satisfies UserData,
     );
+
+    bot.logger.info(`Interview for user \`${member.user.globalName} (${member.user.id})\` has ended.`);
   }
 
   return true;
