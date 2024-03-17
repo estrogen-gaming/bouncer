@@ -1,4 +1,5 @@
 name: CI
+run-name: ${{ inputs.reason }}
 
 on:
   push:
@@ -15,6 +16,12 @@ on:
       - src/**
       - deno.json
       - deno.lock
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Dispatch reason
+        required: true
+        type: string
 
 jobs:
   ci:

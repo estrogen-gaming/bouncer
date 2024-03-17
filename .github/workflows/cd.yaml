@@ -1,27 +1,18 @@
 name: Publish Container Image
+run-name: ${{ inputs.reason }}
 
 on:
   push:
-    branches: main
-    paths:
-      - .github/workflows/cd.yaml
-      - bin/bouncer.ts
-      - src/**
-      - .containerignore
-      - Containerfile
-      - deno.json
-      - deno.lock
     tags: '*.*.*'
-  pull_request:
-    branches: main
-    paths:
-      - .github/workflows/cd.yaml
-      - bin/bouncer.ts
-      - src/**
-      - .containerignore
-      - Containerfile
-      - deno.json
-      - deno.lock
+  workflow_run:
+    workflows: CI
+    types: completed
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Dispatch reason
+        required: true
+        type: string
 
 permissions:
   contents: read
