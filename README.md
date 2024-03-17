@@ -51,6 +51,16 @@ Bouncer can be ran with `deno task start`.
 
 ## Configuration
 
+Bouncer uses [YAML](https://yaml.org) for configuration file.
+
+> [!TIP]
+>
+> Configuration file path can be specified using `-c` flag when running bouncer.
+>
+> ```sh
+> deno task start -c /my/config/file.yaml
+> ```
+
 ### Example Configuration
 
 > [!TIP]
