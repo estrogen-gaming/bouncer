@@ -147,7 +147,6 @@ export const endInterview = async (
     }
 
     await member.roles.remove(bot.context.roles.ongoingInterview);
-    await member.roles.remove(bot.context.roles.pendingInterview);
 
     //* `channelId` is guaranteed to be present here, since it's an ongoing interview.
     const userInterviewChannel = member.guild.channels.cache.get(userData.value.interview.channelId!);
