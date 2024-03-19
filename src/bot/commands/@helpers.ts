@@ -158,6 +158,10 @@ export async function createInterviewChannel(
     parent: bot.context.channels.interviewsCategory,
     permissionOverwrites: [
       {
+        id: bot.context.roles.moderator.id,
+        allow: [PermissionFlagsBits.ViewChannel],
+      },
+      {
         id: member.user.id,
         allow: [PermissionFlagsBits.ViewChannel],
       },
