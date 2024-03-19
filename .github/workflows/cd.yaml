@@ -3,6 +3,7 @@ run-name: ${{ inputs.reason }}
 
 on:
   push:
+    paths: Containerfile
     tags: v*.*.*
   workflow_run:
     workflows: CI
