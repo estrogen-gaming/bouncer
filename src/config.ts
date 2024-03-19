@@ -34,6 +34,10 @@ export const DiscordConfigRolesSchema = object({
    */
   ongoingInterviewId: numericString(),
   /**
+   * The role ID for disapproved interviews.
+   */
+  disapprovedInterviewId: numericString(),
+  /**
    * The role ID for users approved with text interview.
    */
   nsfwAccessId: numericString(),

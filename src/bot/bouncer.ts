@@ -40,6 +40,10 @@ export interface Context {
      */
     ongoingInterview: Role;
     /**
+     * The role for disapproved interviews.
+     */
+    disapprovedInterview: Role;
+    /**
      * The role for users approved with text interview.
      */
     nsfwAccess: Role;

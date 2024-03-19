@@ -144,6 +144,8 @@ export const endInterview = async (
       } else {
         await member.roles.add(bot.context.roles.nsfwVerified);
       }
+    } else {
+      await member.roles.add(bot.context.roles.disapprovedInterview);
     }
 
     await member.roles.remove(bot.context.roles.ongoingInterview);
