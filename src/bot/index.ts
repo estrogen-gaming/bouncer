@@ -66,13 +66,13 @@ export const startBot = async (database: Deno.Kv, config: DiscordConfig, logger:
       return;
     }
 
-    if (!interaction.member?.roles.cache.has(bot.context.roles.moderator.id)) {
-      await interaction.reply({
-        content: 'You do not have permission to use this command.',
-        ephemeral: true,
-      });
-      return;
-    }
+    // if (!interaction.member?.roles.cache.has(bot.context.roles.moderator.id)) {
+    //   await interaction.reply({
+    //     content: 'You do not have permission to use this command.',
+    //     ephemeral: true,
+    //   });
+    //   return;
+    // }
 
     const command = interactionClient.commands.find((_, command) => command.name === interaction.commandName);
     if (!command) return;
