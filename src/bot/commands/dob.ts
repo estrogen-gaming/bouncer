@@ -62,7 +62,7 @@ export default class DateOfBirth implements Command {
     }
 
     await interaction.reply({
-      content: `The date of birth is ${time(dateOfBirth, 'D')} and the age is ${time(dateOfBirth, 'R')}.`,
+      content: `The date of birth is ${time(dateOfBirth, 'D')} and the age is ${getExactAge(dateOfBirth)}.`,
       ephemeral: true,
     });
   }
@@ -74,4 +74,20 @@ function isLeapYear(year: number) {
 
 function daysInMonth(year: number, month: number) {
   return [31, isLeapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1];
+}
+
+function getExactAge(birthDate: Date): number {
+  const currentDate = new Date();
+  let age = currentDate.getFullYear() - birthDate.getFullYear();
+
+  if (
+    currentDate.getMonth() < birthDate.getMonth() ||
+    (currentDate.getMonth() === birthDate.getMonth() && currentDate.getDate() < birthDate.getDate()) ||
+    (isLeapYear(currentDate.getFullYear()) && currentDate.getMonth() === 1 && currentDate.getDate() === 29 &&
+      birthDate.getMonth() === 1 && birthDate.getDate() === 29)
+  ) {
+    age--;
+  }
+
+  return age;
 }
