@@ -18,8 +18,12 @@ docker run ghcr.io/aronson/bouncer
 Bouncer have `config.yaml`, `data` and `logs` mount points on `/app` path, and they can be mounted to a host or a volume with the following command:
 
 ```sh
-docker run -v /path/to/your/config.yaml:/app/config.yaml:r -v /path/to/bouncer/data:/app/data -v /path/to/bouncer/logs:/app/logs ghcr.io/aronson/bouncer
+docker run -v /path/to/your/config.yaml:/app/config.yaml:ro -v /path/to/bouncer/data:/app/data -v /path/to/bouncer/logs:/app/logs ghcr.io/aronson/bouncer
 ```
+
+> [!IMPORTANT]
+>
+> Since [Containerfile](Containerfile) contains `VOLUME` instruction to set `/app/data` and `/app/logs` volume, we don't recommend changing `logFolder` and `database` configuration options.
 
 ### Native Application
 
