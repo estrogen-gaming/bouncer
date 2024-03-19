@@ -12,7 +12,7 @@ Grant your users access to NSFW by interviewing them.
 Bouncer is [published as a Container image on GitHub Container Registry](https://github.com/aronson/bouncer/pkgs/container/bouncer) and can be run with the following command:
 
 ```sh
-docker run ghcr.io/aronson/bounccer
+docker run ghcr.io/aronson/bouncer
 ```
 
 Bouncer have `config.yaml`, `data` and `logs` mount points on `/app` path, and they can be mounted to a host or a volume with the following command:
