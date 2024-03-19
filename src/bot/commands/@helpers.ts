@@ -152,16 +152,17 @@ export const endInterview = async (
 
     //* `channelId` is guaranteed to be present here, since it's an ongoing interview.
     const userInterviewChannel = member.guild.channels.cache.get(userData.value.interview.channelId!);
+    // TODO: Properly guard database types.
     if (!userInterviewChannel) {
       bot.logger.warn(
         `Interview channel for user \`${member.user.globalName} (${member.user.id})\` not found. Skipping removing user permissions from that channel...`,
       );
     } else if (userInterviewChannel.type !== ChannelType.GuildText) {
       bot.logger.warn(
-        `Interview channel for user \`${member.user.globalName} (${member.user.id})\` is not a text channel. Skipping removing user permissions from that channel...`,
+        `Interview channel for user \`${member.user.globalName} (${member.user.id})\` is not a text channel. Skipping deleting that channel...`,
       );
     } else {
-      await userInterviewChannel.permissionOverwrites.delete(member.user.id);
+      await userInterviewChannel.delete('Interview has ended.');
     }
   } catch (error) {
     if (error instanceof DiscordAPIError && error.code === 50013) {
