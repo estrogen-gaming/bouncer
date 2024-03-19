@@ -16,10 +16,7 @@ export const startInterview = async (
   interviewType: InterviewType = InterviewType.Text,
 ) => {
   const userData = await bot.database.get<UserData>(['users', member.user.id]);
-  if (!userData?.value) {
-    bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` is not pending for approval. Ignoring...`);
-    return null;
-  } else if (userData.value.interview.status !== InterviewStatus.Pending) {
+  if (userData?.value?.interview.status !== InterviewStatus.Pending) {
     bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` is not pending for interview. Ignoring...`);
     return null;
   }
@@ -64,6 +61,54 @@ export const startInterview = async (
   return interviewChannel;
 };
 
+export const startSelfIDInterview = async (interaction: CommandInteraction) => {
+  const bot = interaction.client as BouncerBot;
+  const member = interaction.member;
+
+  if (!member) return null;
+
+  const userData = await bot.database.get<UserData>(['users', member.user.id]);
+  if (userData.value?.interview.status === InterviewStatus.Approved) {
+    if (userData.value.interview.type === InterviewType.Id) {
+      await interaction.reply({
+        content: "You're already verified by ID.",
+        ephemeral: true,
+      });
+      return;
+    }
+  } else {
+    await interaction.reply({
+      content: "You're not verified by text yet to be verified by ID. Please get verified by text first.",
+      ephemeral: true,
+    });
+    return;
+  }
+
+  const interviewChannel = await createInterviewChannel(bot, member.guild, member, InterviewType.Id);
+
+  await bot.database.set(
+    ['users', member.user.id],
+    {
+      interview: {
+        type: InterviewType.Id,
+        status: InterviewStatus.Ongoing,
+        channelId: interviewChannel.id,
+      },
+    } satisfies UserData,
+  );
+
+  bot.logger.info(
+    `Started self ID interview for user \`${member.user.globalName} (${member.user.id})\`.`,
+  );
+
+  await interaction.reply({
+    content: `Interview channel ${interviewChannel} has been created for you.`,
+    ephemeral: true,
+  });
+
+  return interviewChannel;
+};
+
 export const endInterview = async (
   bot: BouncerBot,
   member: GuildMember,
@@ -87,7 +132,10 @@ export const endInterview = async (
       if (userData.value.interview.type === InterviewType.Text) {
         await member.roles.add(bot.context.roles.nsfwAccess);
       } else {
+        // TODO: We're just assuming for now, /interview command will not have
+        // the `interview_type` option soon.
         await member.roles.add(bot.context.roles.nsfwVerified);
+        await member.roles.remove(bot.context.roles.nsfwAccess);
       }
     } else {
       await member.roles.add(bot.context.roles.disapprovedInterview);
