@@ -1,9 +1,10 @@
 import { dirname, join } from '@std/path';
 
-import { REST, Routes } from '@npm/discord.js';
+import { DiscordAPIError, GuildMember, REST, Routes } from '@npm/discord.js';
 
 import { Command } from './commands/@index.ts';
 import { BouncerBot } from './bouncer.ts';
+import { InterviewStatus, UserData } from '../database.ts';
 
 /**
  * Scan all the commands in the current directory and
@@ -12,6 +13,8 @@ import { BouncerBot } from './bouncer.ts';
  * @param bot Bot instance.
  */
 export const scanCommands = async (bot: BouncerBot) => {
+  //? Maybe instead of doing that, we should import all the commands dynamically with
+  //? `import`, so its its both easier to manage and `deno compile` would actually work.
   const commandsPath = join(
     dirname(new URL(import.meta.url).pathname),
     './commands',
@@ -57,4 +60,61 @@ export const registerCommands = async (
   } catch (error) {
     bot.logger.error('Failed to register commands:', error);
   }
+};
+
+/**
+ * Check if user has been interviewed. If not, add them to the pending interview
+ * role and send a message to the interview flags channel.
+ *
+ * @param bot Bot instance.
+ * @param guild Current guild instance.
+ * @param member Event invoker member instance.
+ * @returns *void*
+ */
+export const checkUserInterviewStatus = async (bot: BouncerBot, member: GuildMember) => {
+  const existsUser = await bot.database.get<UserData>(['users', member.user.id]);
+  if (existsUser?.value?.interview.status === InterviewStatus.Approved) {
+    bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` has already been interviewed. Ignoring...`);
+    return;
+  } else if (existsUser?.value?.interview.status === InterviewStatus.Ongoing) {
+    bot.logger.warn(`User \`${member.user.globalName} (${member.user.id})\` is on an ongoing interview. Ignoring...`);
+    return;
+  } else if (existsUser?.value?.interview.status === InterviewStatus.Disapproved) {
+    bot.logger.warn(
+      `User \`${member.user.globalName} (${member.user.id})\` has been disapproved in an interview. Ignoring...`,
+    );
+    return;
+  }
+
+  try {
+    await member.roles.add(bot.context.roles.pendingInterview);
+  } catch (error) {
+    if (error instanceof DiscordAPIError && error.code === 50013) {
+      bot.logger.error(
+        `Bot does not have permission to add roles to user \`${member.user.globalName} (${member.user.id})\`.\nAre you sure bot's role is higher than the role you want to add?`,
+      );
+    } else {
+      bot.logger.error(`An unexpected error occurred in \`${checkUserInterviewStatus.name}\` function: ${error}`);
+    }
+
+    return;
+  }
+
+  const interviewFlagsChannel = bot.context.channels.interviewFlagsChannel;
+
+  await bot.database.set(
+    ['users', member.user.id],
+    {
+      interview: {
+        status: InterviewStatus.Pending,
+      },
+    } satisfies UserData,
+  );
+
+  bot.logger.info(`User \`${member.user.globalName} (${member.user.id})\` is marked as pending interview.`);
+
+  // TODO: Mention the command instead of sending it directly.
+  interviewFlagsChannel.send(
+    `${member} marked as pending interview. To interview them, use /interview command. ${bot.context.roles.moderator}`,
+  );
 };
