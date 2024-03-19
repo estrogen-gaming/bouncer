@@ -138,9 +138,16 @@ export const endInterview = async (
   bot.logger.info(`Ending interview for user \`${member.user.globalName} (${member.user.id})\`.`);
 
   try {
-    if (interview.status === InterviewStatus.Disapproved) {
-      await member.roles.remove(bot.context.roles.ongoingInterview);
+    if (interview.status === InterviewStatus.Approved) {
+      if (userData.value.interview.type === InterviewType.Text) {
+        await member.roles.add(bot.context.roles.nsfwAccess);
+      } else {
+        await member.roles.add(bot.context.roles.nsfwVerified);
+      }
     }
+
+    await member.roles.remove(bot.context.roles.ongoingInterview);
+    await member.roles.remove(bot.context.roles.pendingInterview);
 
     //* `channelId` is guaranteed to be present here, since it's an ongoing interview.
     const userInterviewChannel = member.guild.channels.cache.get(userData.value.interview.channelId!);
@@ -155,8 +162,6 @@ export const endInterview = async (
     } else {
       await userInterviewChannel.permissionOverwrites.delete(member.user.id);
     }
-
-    await member.roles.remove(bot.context.roles.pendingInterview);
   } catch (error) {
     if (error instanceof DiscordAPIError && error.code === 50013) {
       bot.logger.error(
@@ -167,18 +172,18 @@ export const endInterview = async (
     }
 
     return false;
-  } finally {
-    await bot.database.set(
-      ['users', member.user.id],
-      {
-        interview: {
-          status: interview.status,
-        },
-      } satisfies UserData,
-    );
-
-    bot.logger.info(`Interview for user \`${member.user.globalName} (${member.user.id})\` has ended.`);
   }
+
+  await bot.database.set(
+    ['users', member.user.id],
+    {
+      interview: {
+        status: interview.status,
+      },
+    } satisfies UserData,
+  );
+
+  bot.logger.info(`Interview for user \`${member.user.globalName} (${member.user.id})\` has ended.`);
 
   return true;
 };
