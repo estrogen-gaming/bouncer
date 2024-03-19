@@ -30,8 +30,8 @@ export default class Interview implements Command {
 
     let interviewType: InterviewType;
 
-    const interviewInput = interaction.options.get('interview_type', true).value;
-    if (interviewInput === 'id') {
+    const interviewInput = interaction.options.get('interview_type');
+    if (interviewInput?.value === 'id') {
       interviewType = InterviewType.Id;
     } else {
       interviewType = InterviewType.Text;
