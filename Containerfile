@@ -1,17 +1,11 @@
-FROM docker.io/denoland/deno:1.41.3 AS builder
+FROM docker.io/denoland/deno:1.41.3
 
 WORKDIR /app
 COPY . .
 
-RUN apt update && apt install -y unzip
-RUN deno compile --allow-env --allow-net --allow-read --allow-write --unstable-kv --output /app/bouncer bin/bouncer.ts
+# TODO: Add cache layer for dependencies
+RUN deno cache bin/bouncer.ts
 
-FROM gcr.io/distroless/cc
+VOLUME [ "/app/data", "/app/logs" ]
 
-WORKDIR /app
-
-COPY --from=builder /app/bouncer /app/bouncer
-
-VOLUME [ "/app/data" "/app/logs" ]
-
-ENTRYPOINT [ "/app/bouncer" ]
+CMD [ "task", "start" ]

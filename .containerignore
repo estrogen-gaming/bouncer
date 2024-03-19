@@ -1,4 +1,7 @@
-data/
-logs/
+*
 
-config.yaml
+!bin/
+!src/
+
+!deno.json
+!deno.lock
