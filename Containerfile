@@ -12,4 +12,6 @@ WORKDIR /app
 
 COPY --from=builder /app/bouncer /app/bouncer
 
+VOLUME [ "/app/data" "/app/logs" ]
+
 ENTRYPOINT [ "/app/bouncer" ]
