@@ -1,6 +1,6 @@
 # bouncer
 
-Grant your users access to NSFW by interviewing them.
+Grant your users access to restricted channels by interviewing them.
 
 [![CI](https://github.com/aronson/bouncer/actions/workflows/ci.yaml/badge.svg)](https://github.com/aronson/bouncer/actions/workflows/ci.yaml)
 [![Publish Container Image](https://github.com/aronson/bouncer/actions/workflows/cd.yaml/badge.svg)](https://github.com/aronson/bouncer/actions/workflows/cd.yaml)
