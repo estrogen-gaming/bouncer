@@ -8,5 +8,7 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.5.3", features = ["env", "derive"] }
+color-eyre = "0.6.3"
+eyre = "0.6.12"
 figment = { version = "0.10.15", features = ["env", "yaml"] }
 serde = { version = "1.0.197", features = ["derive"] }
