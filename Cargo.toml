@@ -5,3 +5,7 @@ version = "0.0.0"
 publish = false
 rust-version = "1.76.0"
 edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.3", features = ["env", "derive"] }
+serde = { version = "1.0.197", features = ["derive"] }
