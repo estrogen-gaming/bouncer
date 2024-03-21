@@ -8,4 +8,5 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.5.3", features = ["env", "derive"] }
+figment = { version = "0.10.15", features = ["env", "yaml"] }
 serde = { version = "1.0.197", features = ["derive"] }
