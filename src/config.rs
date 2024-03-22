@@ -11,7 +11,7 @@ pub struct Config {
     pub discord: Discord,
 }
 
-/// Default path for the SQLite database.
+/// Default path for the [`SQLite`](https://www.sqlite.org/) database.
 fn default_database_path() -> PathBuf {
     PathBuf::from("data/db.sqlite")
 }
