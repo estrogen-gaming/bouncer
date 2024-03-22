@@ -3,16 +3,24 @@ use figment::{
     providers::{Env, Format, Yaml},
     Figment,
 };
+
 mod cli;
 mod config;
+mod utils;
+
+#[macro_use]
+extern crate tracing;
 
 fn main() -> eyre::Result<()> {
+    // Set-up color_eyre for colourful error messages
     color_eyre::install()?;
+    // Set-up tracing for logging
+    utils::log::set_up(None)?;
 
     match cli::Cli::parse().subcommand {
         cli::SubCommands::Start { config } => {
             if !config.try_exists()? {
-                eprintln!("Config file does not exist");
+                error!("Config file does not exist");
                 std::process::exit(1);
             }
 
@@ -22,7 +30,7 @@ fn main() -> eyre::Result<()> {
                 .extract::<config::Config>();
 
             if let Err(err) = config {
-                eprintln!("Error parsing config: {err}");
+                error!("Error parsing config: {err}");
                 std::process::exit(1);
             }
 

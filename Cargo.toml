@@ -12,3 +12,6 @@ color-eyre = "0.6.3"
 eyre = "0.6.12"
 figment = { version = "0.10.15", features = ["env", "yaml"] }
 serde = { version = "1.0.197", features = ["derive"] }
+tracing = "0.1.40"
+tracing-appender = "0.2.3"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
