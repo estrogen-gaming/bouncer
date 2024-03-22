@@ -23,8 +23,8 @@ pub struct Discord {
     // the token.
     /// Token for Discord bot.
     pub token: String,
-    /// Server ID where bot operates.
-    pub server_id: i64,
+    /// Guild ID where bot operates.
+    pub guild_id: i64,
 
     /// IDs for Discord channels.
     pub channels: DiscordChannels,
