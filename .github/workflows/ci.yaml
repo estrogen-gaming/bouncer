@@ -62,6 +62,7 @@ jobs:
         run: cargo +${{ matrix.rust-toolchain }} check --verbose --all
 
       - name: Check Rust code format
+        if: '!cancelled()'
         run: cargo +${{ matrix.rust-toolchain }} fmt --verbose --all --check
 
       - name: Check Rust code lint

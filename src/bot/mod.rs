@@ -1,6 +1,5 @@
 use serenity::{all::GatewayIntents, Client};
 
-pub mod context;
 pub mod event_handler;
 
 pub struct BouncerBot {
