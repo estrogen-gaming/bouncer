@@ -4,6 +4,7 @@ use figment::{
     Figment,
 };
 
+mod bot;
 mod cli;
 mod config;
 mod utils;
@@ -11,7 +12,8 @@ mod utils;
 #[macro_use]
 extern crate tracing;
 
-fn main() -> eyre::Result<()> {
+#[tokio::main]
+async fn main() -> eyre::Result<()> {
     // Set-up color_eyre for colourful error messages
     color_eyre::install()?;
     // Set-up tracing for logging
@@ -24,17 +26,17 @@ fn main() -> eyre::Result<()> {
                 std::process::exit(1);
             }
 
-            let config = Figment::new()
+            match Figment::new()
                 .merge(Yaml::file(config))
                 .merge(Env::raw().split("__"))
-                .extract::<config::Config>();
-
-            if let Err(err) = config {
-                error!("Error parsing config: {err}");
-                std::process::exit(1);
+                .extract::<config::Config>()
+            {
+                Ok(config) => bot::BouncerBot::new(config.discord.token).start().await?,
+                Err(e) => {
+                    error!("Error parsing config: {}", e);
+                    std::process::exit(1);
+                }
             }
-
-            println!("Hello, world!");
         }
     }
 
