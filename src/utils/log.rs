@@ -5,7 +5,7 @@ use tracing_subscriber::{fmt, layer::SubscriberExt, EnvFilter};
 /// and [`tracing_appender::rolling::hourly()`](https://docs.rs/tracing-appender/latest/tracing_appender/rolling/fn.hourly.html).
 pub fn set_up(logs_folder: Option<&str>) -> eyre::Result<()> {
     let collector = tracing_subscriber::registry()
-        .with(EnvFilter::from_default_env().add_directive(tracing::Level::INFO.into()))
+        .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("bouncer=info")))
         .with(fmt::Layer::new().with_writer(std::io::stdout))
         .with(
             fmt::Layer::new()
