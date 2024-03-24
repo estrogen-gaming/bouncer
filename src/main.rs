@@ -31,7 +31,11 @@ async fn main() -> eyre::Result<()> {
                 .merge(Env::raw().split("__"))
                 .extract::<config::Config>()
             {
-                Ok(config) => bot::BouncerBot::new(config.discord.token).start().await?,
+                Ok(config) => {
+                    bot::BouncerBot::new(&config.discord.token)
+                        .start(config.discord)
+                        .await?;
+                }
                 Err(e) => {
                     error!("Error parsing config: {}", e);
                     std::process::exit(1);
