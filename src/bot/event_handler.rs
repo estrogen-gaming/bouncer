@@ -14,7 +14,7 @@ pub struct BouncerEventHandler {
 impl EventHandler for BouncerEventHandler {
     async fn ready(&self, _context: &Context, ready: &Ready) {
         info!(
-            "bot is connected to Discord and ready to serve as `{}`!",
+            "bot is connected to Discord and ready to serve as `{}`",
             ready.user.name
         );
     }

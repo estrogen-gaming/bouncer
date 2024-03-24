@@ -7,6 +7,7 @@ use figment::{
 mod bot;
 mod cli;
 mod config;
+mod macros;
 mod utils;
 
 #[macro_use]
@@ -22,8 +23,7 @@ async fn main() -> eyre::Result<()> {
     match cli::Cli::parse().subcommand {
         cli::SubCommands::Start { config } => {
             if !config.try_exists()? {
-                error!("Config file does not exist");
-                std::process::exit(1);
+                error_exit!("specified configuration file does not exist");
             }
 
             match Figment::new()
@@ -36,9 +36,8 @@ async fn main() -> eyre::Result<()> {
                         .start(config.discord)
                         .await?;
                 }
-                Err(e) => {
-                    error!("Error parsing config: {}", e);
-                    std::process::exit(1);
+                Err(error) => {
+                    error_exit!("error while parsing the configuration file: {error}");
                 }
             }
         }
