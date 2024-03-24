@@ -24,7 +24,7 @@ pub struct Discord {
     /// Token for Discord bot.
     pub token: String,
     /// Guild ID where bot operates.
-    pub guild_id: i64,
+    pub guild_id: u64,
 
     /// IDs for Discord channels.
     pub channels: DiscordChannels,
@@ -36,24 +36,24 @@ pub struct Discord {
 pub struct DiscordChannels {
     //* Categories are technically channels in Discord.
     /// Category ID for interview channels.
-    pub interviews_category_id: i64,
+    pub interviews_category_id: u64,
 
     /// Channel ID for user mark messages.
-    pub interview_marks_id: i64,
+    pub interview_marks_id: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DiscordRoles {
     /// Role IDs for interviewers.
-    pub interviewers_id: Vec<i64>,
+    pub interviewer_ids: Vec<u64>,
 
     /// Role ID for users awaiting interview.
-    pub pending_interview_id: i64,
+    pub pending_interview_id: u64,
     /// Role ID for users currently being interviewed.
-    pub ongoing_interview_id: i64,
+    pub ongoing_interview_id: u64,
 
     /// Role ID for text-verified users.
-    pub text_verified_id: i64,
+    pub text_verified_id: u64,
     /// Role ID for ID-verified users.
-    pub id_verified_id: i64,
+    pub id_verified_id: u64,
 }
