@@ -4,6 +4,7 @@ use serenity::{all::GatewayIntents, Client};
 use sqlx::SqlitePool;
 use tokio::sync::RwLock;
 
+pub mod commands;
 pub mod context;
 pub mod event_handler;
 

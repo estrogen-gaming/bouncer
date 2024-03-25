@@ -2,6 +2,8 @@ use serenity::all::{ChannelType, Context, Guild, GuildChannel, Role};
 
 #[derive(Debug, Default)]
 pub struct BouncerContext {
+    pub _is_populated: bool,
+
     pub guild: Guild,
     pub channels: Channels,
     pub roles: Roles,
@@ -106,6 +108,8 @@ impl BouncerContext {
             trace!("populated the context");
 
             return Some(Self {
+                _is_populated: true,
+
                 guild: guild.to_owned(),
                 channels: Channels {
                     interviews_category: interview_marks_channel.unwrap().to_owned(),
