@@ -10,6 +10,7 @@ pub struct BouncerContext {
 }
 
 impl BouncerContext {
+    #[allow(clippy::cognitive_complexity)]
     pub fn try_populate(
         context: &Context,
         discord_config: &crate::config::Discord,

@@ -54,24 +54,21 @@ impl EventHandler for BouncerEventHandler {
     }
 
     async fn interaction_create(&self, context: &Context, interaction: &Interaction) {
-        match interaction {
-            Interaction::Command(command_interaction) => {
-                if let Err(error) = run_command(
-                    command_interaction.data.name.as_str(),
-                    context,
-                    command_interaction,
-                    self.state.clone(),
-                    &command_interaction.data.options(),
-                )
-                .await
-                {
-                    error!(
-                        "an error occurred while running `{interaction_name}` interaction: {error:#?}",
-                        interaction_name = command_interaction.data.name
-                    );
-                }
+        if let Interaction::Command(command_interaction) = interaction {
+            if let Err(error) = run_command(
+                command_interaction.data.name.as_str(),
+                context,
+                command_interaction,
+                self.state.clone(),
+                &command_interaction.data.options(),
+            )
+            .await
+            {
+                error!(
+                    "an error occurred while running `{interaction_name}` interaction: {error:#?}",
+                    interaction_name = command_interaction.data.name
+                );
             }
-            _ => {}
         }
     }
 }
