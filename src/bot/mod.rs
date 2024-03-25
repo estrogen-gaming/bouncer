@@ -29,6 +29,7 @@ impl BouncerBot {
     }
 
     pub async fn start(&self, discord_config: crate::config::Discord) -> eyre::Result<()> {
+        trace!("creating the bot client...");
         let mut client = Client::builder(
             &self.token,
             GatewayIntents::GUILDS | GatewayIntents::GUILD_MESSAGES | GatewayIntents::GUILD_MEMBERS,
@@ -38,6 +39,7 @@ impl BouncerBot {
             state: self.state.clone(),
         })
         .await?;
+        trace!("created the bot client");
 
         trace!("starting the Discord bot...");
         client.start().await?;

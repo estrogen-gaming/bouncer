@@ -12,6 +12,8 @@ impl BouncerContext {
         context: &Context,
         discord_config: &crate::config::Discord,
     ) -> Option<Self> {
+        trace!("populating the context...");
+
         if let Some(guild) = context.cache.guild(discord_config.guild_id.into()) {
             let interviews_category_channel = guild
                 .channels
@@ -100,6 +102,8 @@ impl BouncerContext {
                 );
                 return None;
             }
+
+            trace!("populated the context");
 
             return Some(Self {
                 guild: guild.to_owned(),

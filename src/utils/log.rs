@@ -22,5 +22,7 @@ pub fn set_up(logs_folder: Option<PathBuf>) -> eyre::Result<()> {
 
     tracing::subscriber::set_global_default(collector)?;
 
+    trace!("set up logger");
+
     Ok(())
 }
