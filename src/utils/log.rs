@@ -12,8 +12,6 @@ pub fn set_up(logs_folder: Option<PathBuf>) -> eyre::Result<()> {
         .with(
             fmt::Layer::new()
                 .with_ansi(false)
-                //* We can use `non_blocking` here, but if we early exit the app
-                //* logs won't be written.
                 .with_writer(tracing_appender::rolling::hourly(
                     logs_folder.unwrap_or_else(|| "logs/".into()),
                     "bouncer.log",
