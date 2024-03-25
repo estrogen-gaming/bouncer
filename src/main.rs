@@ -24,7 +24,7 @@ async fn main() -> eyre::Result<()> {
     match cli::Cli::parse().subcommand {
         cli::SubCommands::Start { config } => {
             if !config.try_exists()? {
-                error_exit!("specified configuration file does not exist");
+                macros::error_exit!("specified configuration file does not exist");
             }
 
             match Figment::new()
@@ -46,7 +46,7 @@ async fn main() -> eyre::Result<()> {
                         .await?;
                 }
                 Err(error) => {
-                    error_exit!("error while parsing the configuration file: {error}");
+                    macros::error_exit!("error while parsing the configuration file: {error}");
                 }
             }
         }
