@@ -34,7 +34,7 @@ async fn main() -> eyre::Result<()> {
             {
                 Ok(config) => {
                     // Set-up database folder if it doesn't exist
-                    utils::database::set_up_database(&config.database).await?;
+                    utils::database::set_up(&config.database).await?;
 
                     let sqlite_pool =
                         SqlitePool::connect(&format!("sqlite://{}", config.database.display()))

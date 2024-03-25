@@ -2,7 +2,7 @@ use std::path::Path;
 
 use tokio::fs;
 
-pub async fn set_up_database(database_path: impl AsRef<Path> + Send) -> eyre::Result<()> {
+pub async fn set_up(database_path: impl AsRef<Path> + Send) -> eyre::Result<()> {
     trace!("setting up the database folder...");
 
     let folder = database_path
