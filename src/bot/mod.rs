@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use serenity::{all::GatewayIntents, Client};
+use sqlx::SqlitePool;
 use tokio::sync::RwLock;
 
 pub mod context;
@@ -11,16 +12,19 @@ pub struct BouncerBot {
     pub state: Arc<RwLock<BouncerState>>,
 }
 
-#[derive(Default)]
 pub struct BouncerState {
+    pub database: SqlitePool,
     pub context: context::BouncerContext,
 }
 
 impl BouncerBot {
-    pub fn new(token: impl AsRef<str>) -> Self {
+    pub fn new(token: impl AsRef<str>, database_pool: SqlitePool) -> Self {
         Self {
             token: token.as_ref().to_string(),
-            state: Arc::new(RwLock::new(BouncerState::default())),
+            state: Arc::new(RwLock::new(BouncerState {
+                database: database_pool,
+                context: context::BouncerContext::default(),
+            })),
         }
     }
 

@@ -41,13 +41,13 @@ impl BouncerContext {
 
             if interviews_category_channel.is_none() {
                 error!(
-                    "category for `interviews_category_id` with the id `{}` could not be found.",
+                    "category for `interviews_category_id` with the id `{}` could not be found",
                     discord_config.channels.interviews_category_id
                 );
                 return None;
             } else if interviews_category_channel.unwrap().kind != ChannelType::Category {
                 error!(
-                    "channel for `interviews_category_id` with the id `{}` is not a category.",
+                    "channel for `interviews_category_id` with the id `{}` is not a category",
                     discord_config.channels.interviews_category_id
                 );
                 return None;
@@ -55,7 +55,7 @@ impl BouncerContext {
 
             if interview_marks_channel.is_none() {
                 error!(
-                    "channel for `interview_marks_id` with the id `{}` could not be found.",
+                    "channel for `interview_marks_id` with the id `{}` could not be found",
                     discord_config.channels.interview_marks_id
                 );
                 return None;
@@ -63,7 +63,7 @@ impl BouncerContext {
 
             if interviewer_roles.is_empty() {
                 error!(
-                    "role for `interviewer_ids` with ids `{:?}` could not be found.",
+                    "role for `interviewer_ids` with ids `{:?}` could not be found",
                     discord_config.roles.interviewer_ids
                 );
                 return None;
@@ -71,7 +71,7 @@ impl BouncerContext {
 
             if pending_interview_role.is_none() {
                 error!(
-                    "role for `pending_interview_id` with the id `{}` could not be found.",
+                    "role for `pending_interview_id` with the id `{}` could not be found",
                     discord_config.roles.pending_interview_id
                 );
                 return None;
@@ -79,7 +79,7 @@ impl BouncerContext {
 
             if ongoing_interview_role.is_none() {
                 error!(
-                    "role for `ongoing_interview_id` with the id `{}` could not be found.",
+                    "role for `ongoing_interview_id` with the id `{}` could not be found",
                     discord_config.roles.ongoing_interview_id
                 );
                 return None;
@@ -87,7 +87,7 @@ impl BouncerContext {
 
             if text_verified_role.is_none() {
                 error!(
-                    "text verified role with the id {} could not be found.",
+                    "text verified role with the id {} could not be found",
                     discord_config.roles.text_verified_id
                 );
                 return None;
@@ -95,7 +95,7 @@ impl BouncerContext {
 
             if id_verified_role.is_none() {
                 error!(
-                    "id verified role with the id {} could not be found.",
+                    "id verified role with the id {} could not be found",
                     discord_config.roles.id_verified_id
                 );
                 return None;
@@ -123,7 +123,7 @@ impl BouncerContext {
         }
 
         error!(
-            "server with the id `{}` could not be found.",
+            "server with the id `{}` could not be found",
             discord_config.guild_id
         );
 

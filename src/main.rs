@@ -3,6 +3,7 @@ use figment::{
     providers::{Env, Format, Yaml},
     Figment,
 };
+use sqlx::SqlitePool;
 
 mod bot;
 mod cli;
@@ -32,7 +33,15 @@ async fn main() -> eyre::Result<()> {
                 .extract::<config::Config>()
             {
                 Ok(config) => {
-                    bot::BouncerBot::new(&config.discord.token)
+                    // Set-up database folder if it doesn't exist
+                    utils::database::set_up_database(&config.database).await?;
+
+                    let sqlite_pool =
+                        SqlitePool::connect(&format!("sqlite://{}", config.database.display()))
+                            .await?;
+                    sqlx::migrate!().run(&sqlite_pool).await?;
+
+                    bot::BouncerBot::new(&config.discord.token, sqlite_pool)
                         .start(config.discord)
                         .await?;
                 }
