@@ -30,7 +30,7 @@ impl EventHandler for BouncerEventHandler {
         while !self.state.read().await.context._is_populated {
             if counter >= 100 {
                 macros::error_exit!(
-                    "context is not populated within 10 seconds. stopping the bot..."
+                    "context is not populated within 10 seconds. stopping bouncer..."
                 );
             }
 
@@ -47,7 +47,7 @@ impl EventHandler for BouncerEventHandler {
         if let Some(context) = BouncerContext::try_populate(context, &self.discord_config) {
             self.state.write().await.context = context;
         } else {
-            macros::error_exit!("failed to populate context, stopping the bot...");
+            macros::error_exit!("failed to populate context, stopping bouncer...");
         }
 
         trace!("ran the `cache_ready` event handler");
