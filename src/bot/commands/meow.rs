@@ -11,7 +11,7 @@ use super::BouncerCommand;
 pub struct Command;
 impl BouncerCommand for Command {
     fn command() -> CreateCommand<'static> {
-        CreateCommand::new("ping").description("Pong!")
+        CreateCommand::new("meow").description("meow :3")
     }
 
     async fn execute(
@@ -24,7 +24,7 @@ impl BouncerCommand for Command {
             .create_response(
                 &context.http,
                 CreateInteractionResponse::Message(
-                    CreateInteractionResponseMessage::new().content("Pong!"),
+                    CreateInteractionResponseMessage::new().content("meow :3"),
                 ),
             )
             .await?;

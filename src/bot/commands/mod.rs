@@ -5,7 +5,7 @@ use tokio::sync::RwLock;
 
 use super::BouncerState;
 
-mod ping;
+mod meow;
 
 pub trait BouncerCommand {
     fn command() -> CreateCommand<'static>;
@@ -21,11 +21,11 @@ pub trait BouncerCommand {
 pub async fn register_commands(guild: &Guild, context: &Context) {
     trace!("registering guild commands...");
 
-    let commands = &[ping::Command::command()];
+    let commands = &[meow::Command::command()];
 
     match guild.set_commands(&context.http, commands).await {
         Ok(commands) => info!(
-            "registered guild commands: {}",
+            "registered guild commands: `{}`",
             commands
                 .iter()
                 .map(|command| command.name.to_string())
@@ -47,12 +47,12 @@ pub async fn run_command(
     debug!("running the `{command_name}` command...");
     let command_result = match command_name {
         "ping" => {
-            ping::Command::execute(context, command_interaction, &*state.read().await, options)
+            meow::Command::execute(context, command_interaction, &*state.read().await, options)
                 .await
         }
         _ => Ok(()),
     };
-    debug!("ran the `{command_name}` command...");
+    debug!("ran the `{command_name}` command");
 
     command_result
 }

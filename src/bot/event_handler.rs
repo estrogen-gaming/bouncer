@@ -64,7 +64,7 @@ impl EventHandler for BouncerEventHandler {
             .await
             {
                 error!(
-                    "an error occurred while running `{interaction_name}` interaction: {error:#?}",
+                    "an error occurred while running `{interaction_name}` command interaction: {error:#?}",
                     interaction_name = command_interaction.data.name
                 );
             }
