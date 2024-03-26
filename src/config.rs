@@ -34,10 +34,6 @@ pub struct Discord {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DiscordChannels {
-    //* Categories are technically channels in Discord.
-    /// Category ID for interview channels.
-    pub interviews_category_id: u64,
-
     /// Channel ID for user mark messages.
     pub interview_marks_id: u64,
 }

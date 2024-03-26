@@ -1,4 +1,4 @@
-use serenity::all::{ChannelType, Context, Guild, GuildChannel, Role};
+use serenity::all::{Context, Guild, GuildChannel, Role};
 
 #[derive(Debug, Default)]
 pub struct BouncerContext {
@@ -18,9 +18,6 @@ impl BouncerContext {
         trace!("populating the context...");
 
         if let Some(guild) = context.cache.guild(discord_config.guild_id.into()) {
-            let interviews_category_channel = guild
-                .channels
-                .get(&discord_config.channels.interviews_category_id.into());
             let interview_marks_channel = guild
                 .channels
                 .get(&discord_config.channels.interview_marks_id.into());
@@ -43,20 +40,6 @@ impl BouncerContext {
                 .roles
                 .get(&discord_config.roles.text_verified_id.into());
             let id_verified_role = guild.roles.get(&discord_config.roles.id_verified_id.into());
-
-            if interviews_category_channel.is_none() {
-                error!(
-                    "category for `interviews_category_id` with the id `{}` could not be found",
-                    discord_config.channels.interviews_category_id
-                );
-                return None;
-            } else if interviews_category_channel.unwrap().kind != ChannelType::Category {
-                error!(
-                    "channel for `interviews_category_id` with the id `{}` is not a category",
-                    discord_config.channels.interviews_category_id
-                );
-                return None;
-            }
 
             if interview_marks_channel.is_none() {
                 error!(
@@ -113,7 +96,6 @@ impl BouncerContext {
 
                 guild: guild.to_owned(),
                 channels: Channels {
-                    interviews_category: interview_marks_channel.unwrap().to_owned(),
                     interview_marks: interview_marks_channel.unwrap().to_owned(),
                 },
                 roles: Roles {
@@ -142,7 +124,6 @@ impl BouncerContext {
 
 #[derive(Debug, Default)]
 pub struct Channels {
-    pub interviews_category: GuildChannel,
     pub interview_marks: GuildChannel,
 }
 
