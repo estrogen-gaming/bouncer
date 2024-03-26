@@ -56,9 +56,8 @@ impl EventHandler for BouncerEventHandler {
     async fn interaction_create(&self, context: &Context, interaction: &Interaction) {
         if let Interaction::Command(command_interaction) = interaction {
             if let Err(error) = run_command(
-                command_interaction.data.name.as_str(),
-                context,
                 command_interaction,
+                context,
                 self.state.clone(),
                 &command_interaction.data.options(),
             )

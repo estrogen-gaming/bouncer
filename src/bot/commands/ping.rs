@@ -3,7 +3,6 @@ use serenity::{
     builder::{CreateCommand, CreateInteractionResponse, CreateInteractionResponseMessage},
     client::Context,
 };
-use tokio::sync::RwLockReadGuard;
 
 use crate::bot::BouncerState;
 
@@ -18,7 +17,7 @@ impl BouncerCommand for Command {
     async fn execute(
         context: &Context,
         interaction: &CommandInteraction,
-        _state: RwLockReadGuard<'_, BouncerState>,
+        _state: &BouncerState,
         _options: &[ResolvedOption<'_>],
     ) -> eyre::Result<()> {
         interaction

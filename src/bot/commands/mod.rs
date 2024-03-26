@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use serenity::all::{CommandInteraction, Context, CreateCommand, Guild, ResolvedOption};
-use tokio::sync::{RwLock, RwLockReadGuard};
+use tokio::sync::RwLock;
 
 use super::BouncerState;
 
@@ -13,7 +13,7 @@ pub trait BouncerCommand {
     async fn execute(
         context: &Context,
         interaction: &CommandInteraction,
-        state: RwLockReadGuard<'_, BouncerState>,
+        state: &BouncerState,
         options: &[ResolvedOption],
     ) -> eyre::Result<()>;
 }
@@ -37,17 +37,19 @@ pub async fn register_commands(guild: &Guild, context: &Context) {
 }
 
 pub async fn run_command(
-    command_name: &str,
-    context: &Context,
     command_interaction: &CommandInteraction,
+    context: &Context,
     state: Arc<RwLock<BouncerState>>,
     options: &[ResolvedOption<'_>],
 ) -> eyre::Result<()> {
+    let command_name = command_interaction.data.name.as_str();
+
     debug!("running the `{command_name}` command...");
 
     match command_name {
         "ping" => {
-            ping::Command::execute(context, command_interaction, state.read().await, options).await
+            ping::Command::execute(context, command_interaction, &*state.read().await, options)
+                .await
         }
         _ => Ok(()),
     }
