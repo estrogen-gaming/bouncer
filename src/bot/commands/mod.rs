@@ -45,12 +45,14 @@ pub async fn run_command(
     let command_name = command_interaction.data.name.as_str();
 
     debug!("running the `{command_name}` command...");
-
-    match command_name {
+    let command_result = match command_name {
         "ping" => {
             ping::Command::execute(context, command_interaction, &*state.read().await, options)
                 .await
         }
         _ => Ok(()),
-    }
+    };
+    debug!("ran the `{command_name}` command...");
+
+    command_result
 }
