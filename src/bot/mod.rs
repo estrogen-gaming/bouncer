@@ -7,6 +7,7 @@ use tokio::sync::RwLock;
 pub mod commands;
 pub mod context;
 pub mod event_handler;
+pub mod helpers;
 
 pub struct BouncerBot {
     token: String,

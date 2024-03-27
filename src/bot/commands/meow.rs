@@ -1,10 +1,6 @@
-use serenity::{
-    all::{CommandInteraction, ResolvedOption},
-    builder::{CreateCommand, CreateInteractionResponse, CreateInteractionResponseMessage},
-    client::Context,
-};
+use serenity::builder::CreateCommand;
 
-use crate::bot::BouncerState;
+use crate::bot::{helpers::interaction_context::CommandInteractionContext, BouncerState};
 
 use super::BouncerCommand;
 
@@ -15,19 +11,10 @@ impl BouncerCommand for Command {
     }
 
     async fn execute(
-        context: &Context,
-        interaction: &CommandInteraction,
+        interaction_context: CommandInteractionContext<'_>,
         _state: &BouncerState,
-        _options: &[ResolvedOption<'_>],
     ) -> eyre::Result<()> {
-        interaction
-            .create_response(
-                &context.http,
-                CreateInteractionResponse::Message(
-                    CreateInteractionResponseMessage::new().content("meow :3"),
-                ),
-            )
-            .await?;
+        interaction_context.reply_string("meow :3".into()).await?;
 
         Ok(())
     }

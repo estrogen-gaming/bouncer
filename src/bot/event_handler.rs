@@ -9,6 +9,7 @@ use crate::bot::context::BouncerContext;
 use crate::macros;
 
 use super::commands::run_command;
+use super::helpers::interaction_context::CommandInteractionContext;
 
 pub struct BouncerEventHandler {
     pub discord_config: crate::config::Discord,
@@ -55,14 +56,13 @@ impl EventHandler for BouncerEventHandler {
 
     async fn interaction_create(&self, context: &Context, interaction: &Interaction) {
         if let Interaction::Command(command_interaction) = interaction {
-            if let Err(error) = run_command(
-                command_interaction,
+            let interaction_context = CommandInteractionContext {
                 context,
-                self.state.clone(),
-                &command_interaction.data.options(),
-            )
-            .await
-            {
+                interaction: command_interaction,
+                options: &command_interaction.data.options(),
+            };
+
+            if let Err(error) = run_command(interaction_context, self.state.clone()).await {
                 error!(
                     "an error occurred while running `{interaction_name}` command interaction: {error:#?}",
                     interaction_name = command_interaction.data.name

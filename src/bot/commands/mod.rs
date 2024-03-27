@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
-use serenity::all::{CommandInteraction, Context, CreateCommand, Guild, ResolvedOption};
+use serenity::all::{Context, CreateCommand, Guild};
 use tokio::sync::RwLock;
 
-use super::BouncerState;
+use super::{helpers::interaction_context::CommandInteractionContext, BouncerState};
 
 mod meow;
 
@@ -11,10 +11,8 @@ pub trait BouncerCommand {
     fn command() -> CreateCommand<'static>;
 
     async fn execute(
-        context: &Context,
-        interaction: &CommandInteraction,
+        interaction_context: CommandInteractionContext<'_>,
         state: &BouncerState,
-        options: &[ResolvedOption],
     ) -> eyre::Result<()>;
 }
 
@@ -37,19 +35,14 @@ pub async fn register_commands(guild: &Guild, context: &Context) {
 }
 
 pub async fn run_command(
-    command_interaction: &CommandInteraction,
-    context: &Context,
+    interaction_context: CommandInteractionContext<'_>,
     state: Arc<RwLock<BouncerState>>,
-    options: &[ResolvedOption<'_>],
 ) -> eyre::Result<()> {
-    let command_name = command_interaction.data.name.as_str();
+    let command_name = interaction_context.interaction.data.name.as_str();
 
     debug!("running the `{command_name}` command...");
     let command_result = match command_name {
-        "ping" => {
-            meow::Command::execute(context, command_interaction, &*state.read().await, options)
-                .await
-        }
+        "ping" => meow::Command::execute(interaction_context, &*state.read().await).await,
         _ => Ok(()),
     };
     debug!("ran the `{command_name}` command");
