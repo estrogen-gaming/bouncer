@@ -7,8 +7,13 @@ use super::{helpers::interaction_context::CommandInteractionContext, BouncerStat
 
 mod meow;
 
-pub trait BouncerCommand {
-    fn command() -> CreateCommand<'static>;
+pub trait BouncerCommand<'a> {
+    const COMMAND_NAME: &'a str;
+    const COMMAND_DESCRIPTION: &'a str;
+
+    fn command() -> CreateCommand<'a> {
+        CreateCommand::new(Self::COMMAND_NAME).description(Self::COMMAND_DESCRIPTION)
+    }
 
     async fn execute(
         interaction_context: CommandInteractionContext<'_>,
@@ -42,7 +47,9 @@ pub async fn run_command(
 
     debug!("running the `{command_name}` command...");
     let command_result = match command_name {
-        "ping" => meow::Command::execute(interaction_context, &*state.read().await).await,
+        meow::Command::COMMAND_NAME => {
+            meow::Command::execute(interaction_context, &*state.read().await).await
+        }
         _ => Ok(()),
     };
     debug!("ran the `{command_name}` command");
