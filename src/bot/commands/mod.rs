@@ -56,7 +56,10 @@ pub async fn run_command(
         }
         _ => Ok(()),
     };
-    debug!("ran the `{command_name}` command");
+
+    if command_result.is_ok() {
+        debug!("ran the `{command_name}` command");
+    }
 
     command_result
 }
