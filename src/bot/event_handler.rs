@@ -28,7 +28,7 @@ impl EventHandler for BouncerEventHandler {
         // or `tokio::sync::Notify`. The attempt was made, but it did not
         // work as expected. Should investigate further.
         let mut counter = 0;
-        while !self.state.read().await.context._is_populated {
+        while !self.state.read().await.context.is_populated() {
             if counter >= 100 {
                 macros::error_exit!(
                     "context is not populated within 10 seconds. stopping bouncer..."

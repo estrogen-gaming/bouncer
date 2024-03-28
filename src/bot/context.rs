@@ -2,11 +2,27 @@ use serenity::all::{Context, Guild, GuildChannel, Role};
 
 #[derive(Debug, Default)]
 pub struct BouncerContext {
-    pub _is_populated: bool,
+    _is_populated: bool,
 
     pub guild: Guild,
     pub channels: Channels,
     pub roles: Roles,
+}
+
+#[derive(Debug, Default)]
+pub struct Channels {
+    pub interview_marks: GuildChannel,
+}
+
+#[derive(Debug, Default)]
+pub struct Roles {
+    pub interviewers: Vec<Role>,
+
+    pub pending_interview: Role,
+    pub ongoing_interview: Role,
+
+    pub text_verified: Role,
+    pub id_verified: Role,
 }
 
 impl BouncerContext {
@@ -120,20 +136,8 @@ impl BouncerContext {
 
         None
     }
-}
 
-#[derive(Debug, Default)]
-pub struct Channels {
-    pub interview_marks: GuildChannel,
-}
-
-#[derive(Debug, Default)]
-pub struct Roles {
-    pub interviewers: Vec<Role>,
-
-    pub pending_interview: Role,
-    pub ongoing_interview: Role,
-
-    pub text_verified: Role,
-    pub id_verified: Role,
+    pub fn is_populated(&self) -> bool {
+        self._is_populated
+    }
 }
