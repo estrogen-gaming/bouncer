@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use serenity::all::{Context, EventHandler, Interaction, Ready};
+use serenity::all::{Context, EventHandler, Interaction, Message, Ready};
 use tokio::sync::RwLock;
 use tokio::time::{self, Duration};
 
@@ -42,18 +42,6 @@ impl EventHandler for BouncerEventHandler {
         register_commands(&self.state.read().await.context.guild, context).await;
     }
 
-    async fn cache_ready(&self, context: &Context, _guilds: &Vec<serenity::model::id::GuildId>) {
-        trace!("running the `cache_ready` event handler...");
-
-        if let Some(context) = BouncerContext::try_populate(context, &self.discord_config) {
-            self.state.write().await.context = context;
-        } else {
-            macros::error_exit!("failed to populate context, stopping bouncer...");
-        }
-
-        trace!("ran the `cache_ready` event handler");
-    }
-
     async fn interaction_create(&self, context: &Context, interaction: &Interaction) {
         if let Interaction::Command(command_interaction) = interaction {
             let interaction_context = CommandInteractionContext {
@@ -69,5 +57,97 @@ impl EventHandler for BouncerEventHandler {
                 );
             }
         }
+    }
+
+    async fn message(&self, context: &Context, message: &Message) {
+        let state = self.state.read().await;
+
+        if !state.context.is_populated() {
+            warn!("context is not populated yet, ignoring messages until its populated...");
+            return;
+        }
+
+        let (guild, channel, member) = {
+            let guild_id = message.guild_id;
+            let partial_member = message.member.as_ref();
+
+            // If there's no guild or guild member (message in DMs)
+            // ignore it.
+            if guild_id.is_none() || partial_member.is_none() {
+                debug!("message is not from a guild or a guild member (DMs), ignoring...");
+                return;
+            }
+
+            let guild = match guild_id.unwrap().to_guild_cached(&context.cache) {
+                Some(guild) => guild.to_owned(),
+                None => {
+                    error!("failed to fetch guild from cache");
+                    return;
+                }
+            };
+            let channel = match message.channel(&context.http).await {
+                Ok(channel) => channel.guild().unwrap(),
+                Err(error) => {
+                    error!("failed to fetch channel: {error:#?}");
+                    return;
+                }
+            };
+            let member = match message.member(&context.http).await {
+                Ok(member) => member,
+                Err(error) => {
+                    error!("failed to fetch member: {error:#?}");
+                    return;
+                }
+            };
+
+            (guild, channel, member)
+        };
+
+        if guild.id != state.context.guild.id {
+            debug!("message is not from the specified guild, ignoring...");
+            return;
+        }
+
+        if !channel.nsfw {
+            debug!("message is not in an NSFW channel, ignoring...");
+            return;
+        }
+
+        if member.user.bot() {
+            debug!("message is from a bot, ignoring...");
+            return;
+        }
+
+        // TODO: Use `HashSet` for `context.roles.interviewers`
+        // for `O(1)` lookup.
+        if member.roles.iter().any(|role_id| {
+            state
+                .context
+                .roles
+                .interviewers
+                .iter()
+                .any(|role| role.id == *role_id)
+        }) {
+            debug!("message is from an interviewer, ignoring...");
+            return;
+        } else if member.roles.iter().all(|role_id| {
+            role_id == &state.context.roles.text_verified.id
+                || role_id == &state.context.roles.id_verified.id
+        }) {
+            debug!("message is not from an already interviewed user, ignoring...");
+            return;
+        }
+    }
+
+    async fn cache_ready(&self, context: &Context, _guilds: &Vec<serenity::model::id::GuildId>) {
+        trace!("running the `cache_ready` event handler...");
+
+        if let Some(context) = BouncerContext::try_populate(context, &self.discord_config) {
+            self.state.write().await.context = context;
+        } else {
+            macros::error_exit!("failed to populate context, stopping bouncer...");
+        }
+
+        trace!("ran the `cache_ready` event handler");
     }
 }
