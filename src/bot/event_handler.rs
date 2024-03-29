@@ -78,12 +78,11 @@ impl EventHandler for BouncerEventHandler {
                 return;
             }
 
-            let guild = match guild_id.unwrap().to_guild_cached(&context.cache) {
-                Some(guild) => guild.to_owned(),
-                None => {
-                    error!("failed to fetch guild from cache");
-                    return;
-                }
+            let guild = if let Some(guild) = guild_id.unwrap().to_guild_cached(&context.cache) {
+                guild.to_owned()
+            } else {
+                error!("failed to fetch guild from cache");
+                return;
             };
             let channel = match message.channel(&context.http).await {
                 Ok(channel) => channel.guild().unwrap(),

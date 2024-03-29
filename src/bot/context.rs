@@ -2,7 +2,7 @@ use serenity::all::{Context, Guild, GuildChannel, Role};
 
 #[derive(Debug, Default)]
 pub struct BouncerContext {
-    _is_populated: bool,
+    is_populated: bool,
 
     pub guild: Guild,
     pub channels: Channels,
@@ -108,7 +108,7 @@ impl BouncerContext {
             trace!("populated the context");
 
             return Some(Self {
-                _is_populated: true,
+                is_populated: true,
 
                 guild: guild.to_owned(),
                 channels: Channels {
@@ -137,7 +137,7 @@ impl BouncerContext {
         None
     }
 
-    pub fn is_populated(&self) -> bool {
-        self._is_populated
+    pub const fn is_populated(&self) -> bool {
+        self.is_populated
     }
 }
