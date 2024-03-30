@@ -4,10 +4,11 @@ use serenity::{all::GatewayIntents, Client};
 use sqlx::SqlitePool;
 use tokio::sync::RwLock;
 
-pub mod commands;
-pub mod context;
-pub mod event_handler;
-pub mod helpers;
+mod commands;
+mod context;
+mod event_handler;
+mod extensions;
+mod helpers;
 
 pub struct BouncerBot {
     token: String,

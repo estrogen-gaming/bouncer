@@ -4,10 +4,8 @@ use serenity::{
 };
 
 use crate::bot::{
-    helpers::{
-        interaction_context::CommandInteractionContext, resolved_options::ResolvedOptionExt,
-    },
-    BouncerState,
+    extensions::resolved_options::ResolvedOptionExt,
+    helpers::interaction_context::CommandInteractionContext, BouncerState,
 };
 
 use super::BouncerCommand;
