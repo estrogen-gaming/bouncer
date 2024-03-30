@@ -14,8 +14,8 @@ pub struct CommandInteractionContext<'a> {
     pub options: &'a [ResolvedOption<'a>],
 }
 
-impl CommandInteractionContext<'_> {
-    pub async fn reply_string(&self, message: Cow<'_, str>) -> eyre::Result<(), SerenityError> {
+impl<'a> CommandInteractionContext<'a> {
+    pub async fn reply_string(&self, message: Cow<'a, str>) -> eyre::Result<(), SerenityError> {
         self.interaction
             .create_response(
                 &self.context.http,
