@@ -1,11 +1,8 @@
 use std::borrow::Cow;
 
-use serenity::{
-    all::{
-        CommandInteraction, Context, CreateInteractionResponse, CreateInteractionResponseMessage,
-        ResolvedOption,
-    },
-    Error as SerenityError,
+use serenity::all::{
+    CommandInteraction, Context, CreateInteractionResponse, CreateInteractionResponseMessage,
+    ResolvedOption,
 };
 
 pub struct CommandInteractionContext<'a> {
@@ -15,12 +12,18 @@ pub struct CommandInteractionContext<'a> {
 }
 
 impl<'a> CommandInteractionContext<'a> {
-    pub async fn reply_string(&self, message: Cow<'a, str>) -> eyre::Result<(), SerenityError> {
+    pub async fn reply_string(
+        &self,
+        message: Cow<'a, str>,
+        ephemeral: Option<bool>,
+    ) -> eyre::Result<(), serenity::Error> {
         self.interaction
             .create_response(
                 &self.context.http,
                 CreateInteractionResponse::Message(
-                    CreateInteractionResponseMessage::new().content(message),
+                    CreateInteractionResponseMessage::new()
+                        .content(message)
+                        .ephemeral(ephemeral.unwrap_or(false)),
                 ),
             )
             .await

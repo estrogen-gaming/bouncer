@@ -11,7 +11,9 @@ impl<'a> BouncerCommand<'a> for Command {
         interaction_context: CommandInteractionContext<'_>,
         _state: &BouncerState,
     ) -> eyre::Result<()> {
-        interaction_context.reply_string("meow :3".into()).await?;
+        interaction_context
+            .reply_string("meow :3".into(), Some(true))
+            .await?;
 
         Ok(())
     }

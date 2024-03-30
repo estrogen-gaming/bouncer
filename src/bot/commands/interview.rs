@@ -30,20 +30,20 @@ impl<'a> BouncerCommand<'a> for Command {
     ) -> eyre::Result<()> {
         let Some((user, _member)) = interaction_context.options.get_user_and_member(0) else {
             interaction_context
-                .reply_string("User not found.".into())
+                .reply_string("User not found.".into(), Some(true))
                 .await?;
             return Ok(());
         };
 
         if user.bot() {
             interaction_context
-                .reply_string("Bots can't be interviewed.".into())
+                .reply_string("Bots can't be interviewed.".into(), Some(true))
                 .await?;
             return Ok(());
         }
 
         interaction_context
-            .reply_string(format!("user to meow: {}", user.id.mention()).into())
+            .reply_string(format!("user to meow: {}", user.id.mention()).into(), None)
             .await?;
 
         Ok(())
