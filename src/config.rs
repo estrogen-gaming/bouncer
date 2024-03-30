@@ -7,6 +7,9 @@ pub struct Config {
     /// The path of the SQLite database file.
     #[serde(default = "default_database_path")]
     pub database: PathBuf,
+    /// The path of the folder where logs will be stored.
+    #[serde(default = "default_logs_folder_path")]
+    pub logs_folder: PathBuf,
     /// Discord specific configurations.
     pub discord: Discord,
 }
@@ -14,6 +17,11 @@ pub struct Config {
 /// Default path for the [`SQLite`](https://www.sqlite.org/) database.
 fn default_database_path() -> PathBuf {
     PathBuf::from("data/db.sqlite")
+}
+
+/// Default path of where logs will be stored.
+fn default_logs_folder_path() -> PathBuf {
+    PathBuf::from("logs/")
 }
 
 #[derive(Debug, Serialize, Deserialize)]

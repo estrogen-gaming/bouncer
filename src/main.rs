@@ -16,39 +16,32 @@ extern crate tracing;
 
 #[tokio::main]
 async fn main() -> eyre::Result<()> {
-    // Set-up color_eyre for colourful error messages
+    // Set-up `color_eyre` for colourful error messages
     color_eyre::install()?;
-    // Set-up tracing for logging
-    utils::log::set_up(None)?;
 
     match cli::Cli::parse().subcommand {
         cli::SubCommands::Start { config } => {
             if !config.try_exists()? {
-                macros::error_exit!("specified configuration file does not exist");
+                eyre::bail!("Configuration file doesn't exist on the specified path");
             }
 
-            match Figment::new()
+            let config = Figment::new()
                 .merge(Yaml::file(config))
                 .merge(Env::raw().split("__"))
-                .extract::<config::Config>()
-            {
-                Ok(config) => {
-                    // Set-up database folder if it doesn't exist
-                    utils::database::set_up(&config.database).await?;
+                .extract::<config::Config>()?;
 
-                    let sqlite_pool =
-                        SqlitePool::connect(&format!("sqlite://{}", config.database.display()))
-                            .await?;
-                    sqlx::migrate!().run(&sqlite_pool).await?;
+            // Set-up `tracing` for logging
+            utils::log::set_up(config.logs_folder)?;
 
-                    bot::BouncerBot::new(&config.discord.token, sqlite_pool)
-                        .start(config.discord)
-                        .await?;
-                }
-                Err(error) => {
-                    macros::error_exit!("error while parsing the configuration file: {error}");
-                }
-            }
+            utils::database::set_up(&config.database).await?;
+
+            let sqlite_pool =
+                SqlitePool::connect(&format!("sqlite://{}", config.database.display())).await?;
+            sqlx::migrate!().run(&sqlite_pool).await?;
+
+            bot::BouncerBot::new(&config.discord.token, sqlite_pool)
+                .start(config.discord)
+                .await?;
         }
     }
 

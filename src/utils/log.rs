@@ -61,20 +61,19 @@ impl<'a> MakeWriter<'a> for BouncerStdWriter {
 /// Sets-up [`tracing`](https://docs.rs/tracing) for logging to both
 /// [`std::io::stdout()`](https://doc.rust-lang.org/stable/std/io/fn.stdout.html)
 /// and [`tracing_appender::rolling::hourly()`](https://docs.rs/tracing-appender/latest/tracing_appender/rolling/fn.hourly.html).
-pub fn set_up(logs_folder: Option<PathBuf>) -> eyre::Result<()> {
+pub fn set_up(logs_folder: PathBuf) -> eyre::Result<()> {
     let std_writer = BouncerStdWriter::new();
 
-    let collector = tracing_subscriber::registry()
-        .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("bouncer=info")))
-        .with(fmt::Layer::new().with_writer(std_writer))
-        .with(
-            fmt::Layer::new()
-                .with_ansi(false)
-                .with_writer(tracing_appender::rolling::hourly(
-                    logs_folder.unwrap_or_else(|| "logs/".into()),
-                    "bouncer.log",
-                )),
-        );
+    let collector =
+        tracing_subscriber::registry()
+            .with(
+                EnvFilter::try_from_default_env()
+                    .unwrap_or_else(|_| EnvFilter::new("bouncer=info")),
+            )
+            .with(fmt::Layer::new().with_writer(std_writer))
+            .with(fmt::Layer::new().with_ansi(false).with_writer(
+                tracing_appender::rolling::hourly(logs_folder, "bouncer.log"),
+            ));
 
     tracing::subscriber::set_global_default(collector)?;
 
