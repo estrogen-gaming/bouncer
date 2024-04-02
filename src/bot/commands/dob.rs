@@ -1,4 +1,4 @@
-use chrono::{format::ParseErrorKind, NaiveDate, Utc};
+use chrono::{format::ParseErrorKind, Datelike, NaiveDate, Utc};
 use serenity::all::{
     CommandOptionType, CreateCommand, CreateCommandOption, FormattedTimestamp,
     FormattedTimestampStyle,
@@ -88,6 +88,15 @@ impl<'a> BouncerCommand<'a> for Command {
             }
         };
 
+        let today = Utc::now();
+        let mut age = today.year() - parsed_date.year();
+
+        if today.month() < parsed_date.month() {
+            age -= 1;
+        } else if today.month() == parsed_date.month() && today.day() < parsed_date.day() {
+            age -= 1;
+        }
+
         interaction_context
             .reply_string(
                 format!(
@@ -101,11 +110,6 @@ impl<'a> BouncerCommand<'a> for Command {
                             .into(),
                         Some(FormattedTimestampStyle::LongDate)
                     ),
-                    age = Utc::now()
-                        .date_naive()
-                        .signed_duration_since(parsed_date)
-                        .num_days()
-                        / 365
                 )
                 .into(),
                 Some(true),
