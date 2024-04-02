@@ -5,6 +5,7 @@ use tokio::sync::RwLock;
 
 use super::{helpers::interaction_context::CommandInteractionContext, BouncerState};
 
+mod dob;
 mod interview;
 mod meow;
 
@@ -25,7 +26,11 @@ pub trait BouncerCommand<'a> {
 pub async fn register_commands(guild: &Guild, context: &Context) {
     trace!("registering guild commands...");
 
-    let commands = &[meow::Command::command(), interview::Command::command()];
+    let commands = &[
+        meow::Command::command(),
+        dob::Command::command(),
+        interview::Command::command(),
+    ];
 
     match guild.set_commands(&context.http, commands).await {
         Ok(commands) => info!(
@@ -50,6 +55,9 @@ pub async fn run_command(
     let command_result = match command_name {
         meow::Command::COMMAND_NAME => {
             meow::Command::execute(interaction_context, &*state.read().await).await
+        }
+        dob::Command::COMMAND_NAME => {
+            dob::Command::execute(interaction_context, &*state.read().await).await
         }
         interview::Command::COMMAND_NAME => {
             interview::Command::execute(interaction_context, &*state.read().await).await

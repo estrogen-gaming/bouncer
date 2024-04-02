@@ -1,3 +1,4 @@
+/// Just a command template for easily copy-pasting to a new command.
 use crate::bot::{helpers::interaction_context::CommandInteractionContext, BouncerState};
 
 use super::BouncerCommand;
