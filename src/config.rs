@@ -26,9 +26,6 @@ fn default_logs_folder_path() -> PathBuf {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Discord {
-    // TODO: Maybe a custom type for Discord bot token
-    // that will have a `parse` function to validate
-    // the token.
     /// Token for Discord bot.
     pub token: String,
     /// Guild ID where bot operates.

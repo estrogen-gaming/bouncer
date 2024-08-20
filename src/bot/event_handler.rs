@@ -29,6 +29,8 @@ impl EventHandler for BouncerEventHandler {
         // work as expected. Should investigate further.
         let mut counter = 0;
         while !self.state.read().await.context.is_populated() {
+            trace!("waiting for context to be populated...");
+
             if counter >= 100 {
                 macros::error_exit!(
                     "context is not populated within 10 seconds. stopping bouncer..."
