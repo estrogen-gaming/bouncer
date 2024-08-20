@@ -18,7 +18,7 @@ pub struct BouncerEventHandler {
 
 #[serenity::async_trait]
 impl EventHandler for BouncerEventHandler {
-    async fn ready(&self, context: &Context, ready: &Ready) {
+    async fn ready(&self, context: Context, ready: Ready) {
         info!(
             "bot is connected to Discord and ready to serve as `{}`",
             ready.user.name
@@ -39,14 +39,14 @@ impl EventHandler for BouncerEventHandler {
             counter += 1;
         }
 
-        register_commands(&self.state.read().await.context.guild, context).await;
+        register_commands(&self.state.read().await.context.guild, &context).await;
     }
 
-    async fn interaction_create(&self, context: &Context, interaction: &Interaction) {
+    async fn interaction_create(&self, context: Context, interaction: Interaction) {
         if let Interaction::Command(command_interaction) = interaction {
             let interaction_context = CommandInteractionContext {
-                context,
-                interaction: command_interaction,
+                context: &context,
+                interaction: &command_interaction,
                 options: &command_interaction.data.options(),
             };
 
@@ -59,7 +59,7 @@ impl EventHandler for BouncerEventHandler {
         }
     }
 
-    async fn message(&self, context: &Context, message: &Message) {
+    async fn message(&self, context: Context, message: Message) {
         let state = self.state.read().await;
 
         if !state.context.is_populated() {
@@ -138,10 +138,10 @@ impl EventHandler for BouncerEventHandler {
         }
     }
 
-    async fn cache_ready(&self, context: &Context, _guilds: &Vec<serenity::model::id::GuildId>) {
+    async fn cache_ready(&self, context: Context, _guilds: Vec<serenity::model::id::GuildId>) {
         trace!("running the `cache_ready` event handler...");
 
-        if let Some(context) = BouncerContext::try_populate(context, &self.discord_config) {
+        if let Some(context) = BouncerContext::try_populate(&context, &self.discord_config) {
             self.state.write().await.context = context;
         } else {
             macros::error_exit!("failed to populate context, stopping bouncer...");

@@ -91,9 +91,9 @@ impl<'a> BouncerCommand<'a> for Command {
         let today = Utc::now();
         let mut age = today.year() - parsed_date.year();
 
-        if today.month() < parsed_date.month() {
-            age -= 1;
-        } else if today.month() == parsed_date.month() && today.day() < parsed_date.day() {
+        if today.month() < parsed_date.month()
+            || today.month() == parsed_date.month() && today.day() < parsed_date.day()
+        {
             age -= 1;
         }
 

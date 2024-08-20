@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
-    /// The path of the SQLite database file.
+    /// The path of the `SQLite` database file.
     #[serde(default = "default_database_path")]
     pub database: PathBuf,
     /// The path of the folder where logs will be stored.
@@ -14,7 +14,7 @@ pub struct Config {
     pub discord: Discord,
 }
 
-/// Default path for the [`SQLite`](https://www.sqlite.org/) database.
+/// Default path for the `SQLite` database.
 fn default_database_path() -> PathBuf {
     PathBuf::from("data/db.sqlite")
 }
