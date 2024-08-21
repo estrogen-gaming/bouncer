@@ -61,7 +61,7 @@ impl<'a> MakeWriter<'a> for BouncerStdWriter {
 /// Sets-up [`tracing`](https://docs.rs/tracing) for logging to both
 /// [`std::io::stdout()`](https://doc.rust-lang.org/stable/std/io/fn.stdout.html)
 /// and [`tracing_appender::rolling::hourly()`](https://docs.rs/tracing-appender/latest/tracing_appender/rolling/fn.hourly.html).
-pub fn set_up(logs_folder: PathBuf) -> eyre::Result<()> {
+pub fn set_up(logs_folder: PathBuf) -> anyhow::Result<()> {
     let std_writer = BouncerStdWriter::new();
 
     let collector =

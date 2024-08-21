@@ -32,7 +32,7 @@ impl<'a> BouncerCommand<'a> for Command {
     async fn execute(
         interaction_context: CommandInteractionContext<'_>,
         _state: &BouncerState,
-    ) -> eyre::Result<()> {
+    ) -> anyhow::Result<()> {
         let Some(date_input) = interaction_context.options.get_string_option("date") else {
             interaction_context
                 .reply_string("Please enter a date.".into(), Some(true))

@@ -20,7 +20,7 @@ pub trait BouncerCommand<'a> {
     async fn execute(
         interaction_context: CommandInteractionContext<'_>,
         state: &BouncerState,
-    ) -> eyre::Result<()>;
+    ) -> anyhow::Result<()>;
 }
 
 pub async fn register_commands(guild: &Guild, context: &Context) {
@@ -48,7 +48,7 @@ pub async fn register_commands(guild: &Guild, context: &Context) {
 pub async fn run_command(
     interaction_context: CommandInteractionContext<'_>,
     state: Arc<RwLock<BouncerState>>,
-) -> eyre::Result<()> {
+) -> anyhow::Result<()> {
     let command_name = interaction_context.interaction.data.name.as_str();
 
     debug!("running the `{command_name}` command...");

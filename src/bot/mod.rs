@@ -31,7 +31,7 @@ impl BouncerBot {
         }
     }
 
-    pub async fn start(&self, discord_config: crate::config::Discord) -> eyre::Result<()> {
+    pub async fn start(&self, discord_config: crate::config::Discord) -> anyhow::Result<()> {
         trace!("creating the Discord client...");
         let mut client = Client::builder(
             &self.token,

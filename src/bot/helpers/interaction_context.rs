@@ -16,7 +16,7 @@ impl<'a> CommandInteractionContext<'a> {
         &self,
         message: Cow<'a, str>,
         ephemeral: Option<bool>,
-    ) -> eyre::Result<(), serenity::Error> {
+    ) -> anyhow::Result<(), serenity::Error> {
         self.interaction
             .create_response(
                 &self.context.http,

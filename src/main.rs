@@ -15,14 +15,11 @@ mod utils;
 extern crate tracing;
 
 #[tokio::main]
-async fn main() -> eyre::Result<()> {
-    // Set-up `color_eyre` for colourful error messages
-    color_eyre::install()?;
-
+async fn main() -> anyhow::Result<()> {
     match cli::Cli::parse().subcommand {
         cli::SubCommands::Start { config } => {
             if !config.try_exists()? {
-                eyre::bail!("Configuration file doesn't exist on the specified path");
+                anyhow::bail!("Configuration file doesn't exist on the specified path");
             }
 
             let config = Figment::new()

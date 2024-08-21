@@ -10,10 +10,9 @@ edition = "2021"
 lto = "thin"
 
 [dependencies]
+anyhow = "1.0.86"
 chrono = "0.4.38"
 clap = { version = "4.5.16", features = ["env", "derive"] }
-color-eyre = "0.6.3"
-eyre = "0.6.12"
 figment = { version = "0.10.19", features = ["env", "yaml"] }
 serde = { version = "1.0.208", features = ["derive"] }
 serenity = { git = "https://github.com/serenity-rs/serenity", branch = "next" }

@@ -2,13 +2,13 @@ use std::path::Path;
 
 use tokio::fs;
 
-pub async fn set_up(database_path: impl AsRef<Path> + Send) -> eyre::Result<()> {
+pub async fn set_up(database_path: impl AsRef<Path> + Send) -> anyhow::Result<()> {
     trace!("setting up the database folder...");
 
     let folder = database_path
         .as_ref()
         .parent()
-        .ok_or_else(|| eyre::eyre!("database path has no parent"))?;
+        .ok_or_else(|| anyhow::anyhow!("database path has no parent"))?;
 
     if !folder.exists() {
         std::fs::create_dir_all(folder)?;

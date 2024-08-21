@@ -27,7 +27,7 @@ impl<'a> BouncerCommand<'a> for Command {
     async fn execute(
         interaction_context: CommandInteractionContext<'_>,
         _state: &BouncerState,
-    ) -> eyre::Result<()> {
+    ) -> anyhow::Result<()> {
         let Some((user, _member)) = interaction_context.options.get_user_and_member(0) else {
             interaction_context
                 .reply_string("User not found.".into(), Some(true))
