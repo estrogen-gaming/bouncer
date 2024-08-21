@@ -30,20 +30,20 @@ impl<'a> BouncerCommand<'a> for Command {
     ) -> anyhow::Result<()> {
         let Some((user, _member)) = interaction_context.options.get_user_and_member(0) else {
             interaction_context
-                .reply_string("User not found.".into(), Some(true))
+                .reply_string("User not found.", Some(true))
                 .await?;
             return Ok(());
         };
 
         if user.bot() {
             interaction_context
-                .reply_string("Bots can't be interviewed.".into(), Some(true))
+                .reply_string("Bots cannot be interviewed.", Some(true))
                 .await?;
             return Ok(());
         }
 
         interaction_context
-            .reply_string(format!("user to meow: {}", user.id.mention()).into(), None)
+            .reply_string(format!("user to meow: {}", user.id.mention()), None)
             .await?;
 
         Ok(())

@@ -7,7 +7,7 @@ use tracing_subscriber::{
     EnvFilter,
 };
 
-struct BouncerStdWriter {
+struct StdWriter {
     stdout: io::Stdout,
     stderr: io::Stderr,
 }
@@ -17,7 +17,7 @@ enum StdIOLock<'a> {
     Stderr(io::StderrLock<'a>),
 }
 
-impl BouncerStdWriter {
+impl StdWriter {
     fn new() -> Self {
         Self {
             stdout: io::stdout(),
@@ -42,7 +42,7 @@ impl<'a> io::Write for StdIOLock<'a> {
     }
 }
 
-impl<'a> MakeWriter<'a> for BouncerStdWriter {
+impl<'a> MakeWriter<'a> for StdWriter {
     type Writer = StdIOLock<'a>;
 
     fn make_writer(&'a self) -> Self::Writer {
@@ -62,7 +62,7 @@ impl<'a> MakeWriter<'a> for BouncerStdWriter {
 /// [`std::io::stdout()`](https://doc.rust-lang.org/stable/std/io/fn.stdout.html)
 /// and [`tracing_appender::rolling::hourly()`](https://docs.rs/tracing-appender/latest/tracing_appender/rolling/fn.hourly.html).
 pub fn set_up(logs_folder: PathBuf) -> anyhow::Result<()> {
-    let std_writer = BouncerStdWriter::new();
+    let std_writer = StdWriter::new();
 
     let collector =
         tracing_subscriber::registry()

@@ -16,7 +16,7 @@ impl<'a> BouncerCommand<'a> for Command {
     const COMMAND_NAME: &'a str = "dob";
     const COMMAND_DESCRIPTION: &'a str = "Calculate the date of birth from given time.";
 
-    fn command() -> serenity::all::CreateCommand<'a> {
+    fn command() -> CreateCommand<'a> {
         CreateCommand::new(Self::COMMAND_NAME)
             .description(Self::COMMAND_DESCRIPTION)
             .add_option(
@@ -35,7 +35,7 @@ impl<'a> BouncerCommand<'a> for Command {
     ) -> anyhow::Result<()> {
         let Some(date_input) = interaction_context.options.get_string_option("date") else {
             interaction_context
-                .reply_string("Please enter a date.".into(), Some(true))
+                .reply_string("Please enter a date.", Some(true))
                 .await?;
             return Ok(());
         };
@@ -43,46 +43,24 @@ impl<'a> BouncerCommand<'a> for Command {
         let parsed_date = match NaiveDate::parse_from_str(date_input, "%Y-%m-%d") {
             Ok(date) => date,
             Err(error) => {
-                match error.kind() {
-                    ParseErrorKind::BadFormat => {
-                        interaction_context
-                            .reply_string(
-                                "The date should be in `YYYY-MM-DD` format.".into(),
-                                Some(true),
-                            )
-                            .await?;
-                    }
-                    ParseErrorKind::OutOfRange => {
-                        interaction_context
-                            .reply_string(
-                                "Ensure that your month value is within the range of 1 to 12, and your day value is correct depending on the month."
-                                    .into(),
-                                Some(true),
-                            )
-                            .await?;
-                    }
-                    ParseErrorKind::TooShort => {
-                        interaction_context
-                            .reply_string(
-                                "The date is not entered completely. Add the missing fields."
-                                    .into(),
-                                Some(true),
-                            )
-                            .await?;
-                    }
+                // TODO: Improve this.
+                let reply_string = match error.kind() {
+                    ParseErrorKind::BadFormat => "The date should be in `YYYY-MM-DD` format.".to_string(),
+                    ParseErrorKind::OutOfRange => "Ensure that your month value is within the range of 1 to 12, and your day value is correct depending on the month.".to_string(),
+                    ParseErrorKind::TooShort => "The date is not entered completely. Add the missing fields.".to_string(),
                     _ => {
                         error!(
                             "an unexpected error occurred while parsing the date: {:?}",
                             error
                         );
-                        interaction_context
-                            .reply_string(
-                                "An unexpected error occurred while parsing the date.".into(),
-                                Some(true),
-                            )
-                            .await?;
+
+                        "An unexpected error occurred while parsing the date.".to_string()
                     }
-                }
+                };
+
+                interaction_context
+                    .reply_string(reply_string, Some(true))
+                    .await?;
 
                 return Ok(());
             }
@@ -110,8 +88,7 @@ impl<'a> BouncerCommand<'a> for Command {
                             .into(),
                         Some(FormattedTimestampStyle::LongDate)
                     ),
-                )
-                .into(),
+                ),
                 Some(true),
             )
             .await?;

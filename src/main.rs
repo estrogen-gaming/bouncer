@@ -22,10 +22,10 @@ async fn main() -> anyhow::Result<()> {
                 anyhow::bail!("Configuration file doesn't exist on the specified path");
             }
 
-            let config = Figment::new()
+            let config: config::Config = Figment::new()
                 .merge(Yaml::file(config))
                 .merge(Env::raw().split("__"))
-                .extract::<config::Config>()?;
+                .extract()?;
 
             // Set-up `tracing` for logging
             utils::log::set_up(config.logs_folder)?;

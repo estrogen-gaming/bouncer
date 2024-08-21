@@ -1,5 +1,3 @@
-use std::borrow::Cow;
-
 use serenity::all::{
     CommandInteraction, Context, CreateInteractionResponse, CreateInteractionResponseMessage,
     ResolvedOption,
@@ -14,7 +12,7 @@ pub struct CommandInteractionContext<'a> {
 impl<'a> CommandInteractionContext<'a> {
     pub async fn reply_string(
         &self,
-        message: Cow<'a, str>,
+        message: impl ToString + Send,
         ephemeral: Option<bool>,
     ) -> anyhow::Result<(), serenity::Error> {
         self.interaction
@@ -22,7 +20,7 @@ impl<'a> CommandInteractionContext<'a> {
                 &self.context.http,
                 CreateInteractionResponse::Message(
                     CreateInteractionResponseMessage::new()
-                        .content(message)
+                        .content(message.to_string())
                         .ephemeral(ephemeral.unwrap_or(false)),
                 ),
             )

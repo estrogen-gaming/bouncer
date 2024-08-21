@@ -24,9 +24,6 @@ impl EventHandler for BouncerEventHandler {
             ready.user.name
         );
 
-        // TODO: Instead of doing this, we should use something like `Condvar`
-        // or `tokio::sync::Notify`. The attempt was made, but it did not
-        // work as expected. Should investigate further.
         let mut counter = 0;
         while !self.state.read().await.context.is_populated() {
             trace!("waiting for context to be populated (try {counter})...");
@@ -138,6 +135,10 @@ impl EventHandler for BouncerEventHandler {
             debug!("message is not from an already interviewed user, ignoring...");
             return;
         }
+
+        //* To make clippy happy. Gives `clippy::significant-drop-tightening`
+        //* warning otherwise.
+        drop(state);
     }
 
     async fn cache_ready(&self, context: Context, _guilds: Vec<serenity::model::id::GuildId>) {

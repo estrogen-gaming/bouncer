@@ -13,7 +13,7 @@ impl<'a> BouncerCommand<'a> for Command {
         _state: &BouncerState,
     ) -> anyhow::Result<()> {
         interaction_context
-            .reply_string("meow :3".into(), Some(true))
+            .reply_string("meow :3", Some(true))
             .await?;
 
         Ok(())
