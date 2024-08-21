@@ -19,7 +19,7 @@ async fn main() -> anyhow::Result<()> {
     match cli::Cli::parse().subcommand {
         cli::SubCommands::Start { config } => {
             if !config.try_exists()? {
-                anyhow::bail!("Configuration file doesn't exist on the specified path");
+                anyhow::bail!("Configuration file doesn't exist on the specified path.");
             }
 
             let config: config::Config = Figment::new()
@@ -27,7 +27,6 @@ async fn main() -> anyhow::Result<()> {
                 .merge(Env::raw().split("__"))
                 .extract()?;
 
-            // Set-up `tracing` for logging
             utils::log::set_up(config.logs_folder)?;
 
             utils::database::set_up(&config.database).await?;

@@ -12,8 +12,8 @@ use super::BouncerCommand;
 
 pub struct Command;
 impl<'a> BouncerCommand<'a> for Command {
-    const COMMAND_NAME: &'static str = "interview";
-    const COMMAND_DESCRIPTION: &'static str = "Interview an user.";
+    const COMMAND_NAME: &'a str = "interview";
+    const COMMAND_DESCRIPTION: &'a str = "Interview an user.";
 
     fn command() -> CreateCommand<'a> {
         CreateCommand::new(Self::COMMAND_NAME)

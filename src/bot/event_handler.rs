@@ -116,8 +116,6 @@ impl EventHandler for BouncerEventHandler {
             return;
         }
 
-        // TODO: Use `HashSet` for `context.roles.interviewers`
-        // for `O(1)` lookup.
         if member.roles.iter().any(|role_id| {
             state
                 .context

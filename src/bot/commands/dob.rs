@@ -43,20 +43,19 @@ impl<'a> BouncerCommand<'a> for Command {
         let parsed_date = match NaiveDate::parse_from_str(date_input, "%Y-%m-%d") {
             Ok(date) => date,
             Err(error) => {
-                // TODO: Improve this.
                 let reply_string = match error.kind() {
-                    ParseErrorKind::BadFormat => "The date should be in `YYYY-MM-DD` format.".to_string(),
-                    ParseErrorKind::OutOfRange => "Ensure that your month value is within the range of 1 to 12, and your day value is correct depending on the month.".to_string(),
-                    ParseErrorKind::TooShort => "The date is not entered completely. Add the missing fields.".to_string(),
+                    ParseErrorKind::BadFormat => "The date should be in `YYYY-MM-DD` format.",
+                    ParseErrorKind::OutOfRange => "Ensure that your month value is within the range of 1 to 12, and your day value is correct depending on the month.",
+                    ParseErrorKind::TooShort => "The date is not entered completely. Add the missing fields.",
                     _ => {
                         error!(
                             "an unexpected error occurred while parsing the date: {:?}",
                             error
                         );
 
-                        "An unexpected error occurred while parsing the date.".to_string()
+                        "An unexpected error occurred while parsing the date."
                     }
-                };
+                }.to_string();
 
                 interaction_context
                     .reply_string(reply_string, Some(true))
