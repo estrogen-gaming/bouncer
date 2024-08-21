@@ -29,7 +29,7 @@ impl EventHandler for BouncerEventHandler {
         // work as expected. Should investigate further.
         let mut counter = 0;
         while !self.state.read().await.context.is_populated() {
-            trace!("waiting for context to be populated...");
+            trace!("waiting for context to be populated (try {counter})...");
 
             if counter >= 100 {
                 macros::error_exit!(

@@ -35,7 +35,7 @@ impl BouncerBot {
         trace!("creating the Discord client...");
         let mut client = Client::builder(
             &self.token,
-            GatewayIntents::GUILDS | GatewayIntents::GUILD_MESSAGES | GatewayIntents::GUILD_MEMBERS,
+            GatewayIntents::GUILDS | GatewayIntents::GUILD_MEMBERS,
         )
         .event_handler(event_handler::BouncerEventHandler {
             discord_config,
