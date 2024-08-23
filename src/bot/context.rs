@@ -1,9 +1,6 @@
-use serenity::{
-    all::{Context, Guild, GuildChannel, Role},
-    model::guild,
-};
+use serenity::all::{Context, Guild, GuildChannel, Role};
 
-use crate::{config, macros::error_exit};
+use crate::config;
 
 #[derive(Debug, Default)]
 pub struct BouncerContext {
