@@ -33,7 +33,10 @@ pub struct Roles {
 impl BouncerContext {
     // TODO: Look into this for usin `Result` instead of `Option`.
     #[allow(clippy::cognitive_complexity)]
-    pub fn try_populate(context: &Context, discord_config: &config::Discord) -> Option<Self> {
+    pub fn try_populate(
+        context: &Context,
+        discord_config: &config::Discord,
+    ) -> anyhow::Result<Self> {
         trace!("populating the context...");
 
         let guild = context
@@ -41,13 +44,13 @@ impl BouncerContext {
             .guild(discord_config.guild_id.into())
             .map_or_else(
                 || {
-                    error_exit!(
+                    anyhow::bail!(
                         "guild for `guild_id` with the id `{}` could not be found",
                         discord_config.guild_id
                     );
                 },
-                |guild| guild,
-            );
+                |guild| Ok(guild),
+            )?;
 
         let interview_marks_channel = match guild
             .channels
@@ -55,11 +58,10 @@ impl BouncerContext {
         {
             Some(channel) => channel,
             None => {
-                error!(
+                anyhow::bail!(
                     "channel for `interview_marks_id` with the id `{}` could not be found",
                     discord_config.channels.interview_marks_id
                 );
-                return None;
             }
         };
 
@@ -71,11 +73,10 @@ impl BouncerContext {
             .collect();
 
         if interviewer_roles.is_empty() {
-            error!(
+            anyhow::bail!(
                 "roles for `interviewer_ids` with ids `{:?}` could not be found",
                 discord_config.roles.interviewer_ids
             );
-            return None;
         }
 
         let pending_interview_role = match guild
@@ -84,11 +85,10 @@ impl BouncerContext {
         {
             Some(role) => role,
             None => {
-                error!(
+                anyhow::bail!(
                     "role for `pending_interview_id` with the id `{}` could not be found",
                     discord_config.roles.pending_interview_id
                 );
-                return None;
             }
         };
 
@@ -98,11 +98,10 @@ impl BouncerContext {
         {
             Some(role) => role,
             None => {
-                error!(
+                anyhow::bail!(
                     "role for `ongoing_interview_id` with the id `{}` could not be found",
                     discord_config.roles.ongoing_interview_id
                 );
-                return None;
             }
         };
 
@@ -112,28 +111,26 @@ impl BouncerContext {
         {
             Some(role) => role,
             None => {
-                error!(
+                anyhow::bail!(
                     "role for `text_verified_id` with the id `{}` could not be found",
                     discord_config.roles.text_verified_id
                 );
-                return None;
             }
         };
 
         let id_verified_role = match guild.roles.get(&discord_config.roles.id_verified_id.into()) {
             Some(role) => role,
             None => {
-                error!(
+                anyhow::bail!(
                     "role for `id_verified_id` with the id `{}` could not be found",
                     discord_config.roles.id_verified_id
                 );
-                return None;
             }
         };
 
         trace!("populated the context");
 
-        Some(Self {
+        Ok(Self {
             is_populated: true,
             guild: guild.to_owned(),
             channels: Channels {

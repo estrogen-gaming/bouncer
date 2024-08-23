@@ -142,10 +142,11 @@ impl EventHandler for BouncerEventHandler {
     async fn cache_ready(&self, context: Context, _guilds: Vec<serenity::model::id::GuildId>) {
         trace!("running the `cache_ready` event handler...");
 
-        if let Some(context) = BouncerContext::try_populate(&context, &self.discord_config) {
-            self.state.write().await.context = context;
-        } else {
-            macros::error_exit!("failed to populate context, stopping bouncer...");
+        match BouncerContext::try_populate(&context, &self.discord_config) {
+            Ok(context) => self.state.write().await.context = context,
+            Err(error) => {
+                macros::error_exit!("failed to populate context, stopping bouncer... ({error})");
+            }
         }
 
         trace!("ran the `cache_ready` event handler");
