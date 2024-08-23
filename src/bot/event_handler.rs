@@ -24,17 +24,17 @@ impl EventHandler for BouncerEventHandler {
             ready.user.name
         );
 
-        let mut counter = 0;
+        let mut counter = 1;
         while !self.state.read().await.context.is_populated() {
             trace!("waiting for context to be populated (try {counter})...");
 
-            if counter >= 100 {
+            if counter >= 10 {
                 macros::error_exit!(
                     "context is not populated within 10 seconds. stopping bouncer..."
                 );
             }
 
-            time::sleep(Duration::from_millis(100)).await;
+            time::sleep(Duration::from_millis(1000)).await;
             counter += 1;
         }
 
