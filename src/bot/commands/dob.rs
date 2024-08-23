@@ -1,8 +1,5 @@
 use chrono::{format::ParseErrorKind, Datelike, NaiveDate, Utc};
-use serenity::all::{
-    CommandOptionType, CreateCommand, CreateCommandOption, FormattedTimestamp,
-    FormattedTimestampStyle,
-};
+use serenity::all::{CommandOptionType, CreateCommand, CreateCommandOption};
 
 use crate::bot::{
     extensions::resolved_options::ResolvedOptionExt,
@@ -14,7 +11,7 @@ use super::BouncerCommand;
 pub struct Command;
 impl<'a> BouncerCommand<'a> for Command {
     const COMMAND_NAME: &'a str = "dob";
-    const COMMAND_DESCRIPTION: &'a str = "Calculate the date of birth from given time.";
+    const COMMAND_DESCRIPTION: &'a str = "Calculate the age from given date of birth time.";
 
     fn command() -> CreateCommand<'a> {
         CreateCommand::new(Self::COMMAND_NAME)
@@ -44,9 +41,9 @@ impl<'a> BouncerCommand<'a> for Command {
             Ok(date) => date,
             Err(error) => {
                 let reply_string = match error.kind() {
-                    ParseErrorKind::BadFormat => "The date should be in `YYYY-MM-DD` format.",
-                    ParseErrorKind::OutOfRange => "Ensure that your month value is within the range of 1 to 12, and your day value is correct depending on the month.",
-                    ParseErrorKind::TooShort => "The date is not entered completely. Add the missing fields.",
+                    ParseErrorKind::BadFormat => "The date should be entered in `YYYY-MM-DD` format.",
+                    ParseErrorKind::OutOfRange => "Ensure the month is between 1 and 12, and the day is valid for the given month.",
+                    ParseErrorKind::TooShort => "The date is incomplete. Please fill in the missing fields.",
                     _ => {
                         error!(
                             "an unexpected error occurred while parsing the date: {:?}",
@@ -67,7 +64,6 @@ impl<'a> BouncerCommand<'a> for Command {
 
         let today = Utc::now();
         let mut age = today.year() - parsed_date.year();
-
         if today.month() < parsed_date.month()
             || today.month() == parsed_date.month() && today.day() < parsed_date.day()
         {
@@ -75,21 +71,7 @@ impl<'a> BouncerCommand<'a> for Command {
         }
 
         interaction_context
-            .reply_string(
-                format!(
-                    "The date of birth is {date_of_birth} and the age is {age}.",
-                    date_of_birth = FormattedTimestamp::new(
-                        parsed_date
-                            .and_hms_opt(0, 0, 0)
-                            .unwrap()
-                            .and_local_timezone(Utc)
-                            .unwrap()
-                            .into(),
-                        Some(FormattedTimestampStyle::LongDate)
-                    ),
-                ),
-                Some(true),
-            )
+            .reply_string(format!("{age} years old."), Some(true))
             .await?;
 
         Ok(())
