@@ -22,6 +22,16 @@ impl<'a> BouncerCommand<'a> for Command {
                 CreateCommandOption::new(CommandOptionType::User, "user", "The user to interview.")
                     .required(true),
             )
+            .add_option(
+                CreateCommandOption::new(
+                    CommandOptionType::String,
+                    "type",
+                    "The type of the interview.",
+                )
+                .add_string_choice("Text", "text")
+                .add_string_choice("ID", "id")
+                .required(true),
+            )
     }
 
     async fn execute(
@@ -40,6 +50,12 @@ impl<'a> BouncerCommand<'a> for Command {
                     "This user does not seem to be a member of the server.",
                     Some(true),
                 )
+                .await?;
+            return Ok(());
+        };
+        let Some(interview_type) = interaction_context.options.get_string_option("type") else {
+            interaction_context
+                .reply_string("Please enter the type of the interview.", Some(true))
                 .await?;
             return Ok(());
         };
@@ -68,7 +84,13 @@ impl<'a> BouncerCommand<'a> for Command {
         }
 
         interaction_context
-            .reply_string(format!("user to meow: {}", user.id.mention()), None)
+            .reply_string(
+                format!(
+                    "{} will be interviewed by `{interview_type}`",
+                    user.id.mention()
+                ),
+                None,
+            )
             .await?;
 
         Ok(())
