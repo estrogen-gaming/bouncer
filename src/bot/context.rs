@@ -49,7 +49,7 @@ impl BouncerContext {
                         discord_config.guild_id
                     );
                 },
-                |guild| Ok(guild),
+                Ok,
             )?;
 
         let interview_marks_channel = match guild

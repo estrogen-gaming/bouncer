@@ -26,18 +26,43 @@ impl<'a> BouncerCommand<'a> for Command {
 
     async fn execute(
         interaction_context: CommandInteractionContext<'_>,
-        _state: &BouncerState,
+        state: &BouncerState,
     ) -> anyhow::Result<()> {
-        let Some((user, _member)) = interaction_context.options.get_user_and_member(0) else {
+        let Some((user, member)) = interaction_context.options.get_user_and_member(0) else {
             interaction_context
                 .reply_string("User not found.", Some(true))
+                .await?;
+            return Ok(());
+        };
+        let Some(member) = member else {
+            interaction_context
+                .reply_string(
+                    "This user does not seem to be a member of the server.",
+                    Some(true),
+                )
                 .await?;
             return Ok(());
         };
 
         if user.bot() {
             interaction_context
-                .reply_string("Bots cannot be interviewed.", Some(true))
+                .reply_string("You cannot interview a bot.", Some(true))
+                .await?;
+            return Ok(());
+        } else if user.id == interaction_context.interaction.user.id {
+            interaction_context
+                .reply_string("You cannot interview yourself.", Some(true))
+                .await?;
+            return Ok(());
+        } else if state
+            .context
+            .roles
+            .interviewers
+            .iter()
+            .any(|interviewer_role| member.roles.contains(&interviewer_role.id))
+        {
+            interaction_context
+                .reply_string("You cannot interview an interviewer.", Some(true))
                 .await?;
             return Ok(());
         }
