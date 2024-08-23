@@ -42,7 +42,7 @@ impl BouncerContext {
             .map_or_else(
                 || {
                     error_exit!(
-                        "guild with the id `{}` could not be found",
+                        "guild for `guild_id` with the id `{}` could not be found",
                         discord_config.guild_id
                     );
                 },
@@ -56,7 +56,7 @@ impl BouncerContext {
             Some(channel) => channel,
             None => {
                 error!(
-                    "channel with the id `{}` could not be found",
+                    "channel for `interview_marks_id` with the id `{}` could not be found",
                     discord_config.channels.interview_marks_id
                 );
                 return None;
@@ -85,7 +85,7 @@ impl BouncerContext {
             Some(role) => role,
             None => {
                 error!(
-                    "role with the id `{}` could not be found",
+                    "role for `pending_interview_id` with the id `{}` could not be found",
                     discord_config.roles.pending_interview_id
                 );
                 return None;
@@ -99,7 +99,7 @@ impl BouncerContext {
             Some(role) => role,
             None => {
                 error!(
-                    "role with the id `{}` could not be found",
+                    "role for `ongoing_interview_id` with the id `{}` could not be found",
                     discord_config.roles.ongoing_interview_id
                 );
                 return None;
@@ -113,7 +113,7 @@ impl BouncerContext {
             Some(role) => role,
             None => {
                 error!(
-                    "role with the id `{}` could not be found",
+                    "role for `text_verified_id` with the id `{}` could not be found",
                     discord_config.roles.text_verified_id
                 );
                 return None;
@@ -124,7 +124,7 @@ impl BouncerContext {
             Some(role) => role,
             None => {
                 error!(
-                    "role with the id `{}` could not be found",
+                    "role for `id_verified_id` with the id `{}` could not be found",
                     discord_config.roles.id_verified_id
                 );
                 return None;
