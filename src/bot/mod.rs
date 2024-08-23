@@ -4,6 +4,8 @@ use serenity::{all::GatewayIntents, Client};
 use sqlx::SqlitePool;
 use tokio::sync::RwLock;
 
+use crate::config;
+
 mod commands;
 mod context;
 mod event_handler;
@@ -31,7 +33,7 @@ impl BouncerBot {
         }
     }
 
-    pub async fn start(&self, discord_config: crate::config::Discord) -> anyhow::Result<()> {
+    pub async fn start(&self, discord_config: config::Discord) -> anyhow::Result<()> {
         trace!("creating the Discord client...");
         let mut client = Client::builder(
             &self.token,

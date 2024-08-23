@@ -51,7 +51,7 @@ pub async fn run_command(
 ) -> anyhow::Result<()> {
     let command_name = interaction_context.interaction.data.name.as_str();
 
-    debug!("running the `{command_name}` command...");
+    trace!("running the `{command_name}` command...");
     let command_result = match command_name {
         meow::Command::COMMAND_NAME => {
             meow::Command::execute(interaction_context, &*state.read().await).await
@@ -66,7 +66,7 @@ pub async fn run_command(
     };
 
     if command_result.is_ok() {
-        debug!("ran the `{command_name}` command");
+        trace!("ran the `{command_name}` command");
     }
 
     command_result
