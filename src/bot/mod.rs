@@ -8,6 +8,7 @@ use crate::config;
 
 mod commands;
 mod context;
+mod database;
 mod event_handler;
 mod extensions;
 mod helpers;
