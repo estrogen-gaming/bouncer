@@ -1,5 +1,5 @@
 use serenity::{
-    all::{CommandOptionType, CreateCommandOption, Mentionable},
+    all::{CommandOptionType, CreateCommandOption, Mentionable, Permissions},
     builder::CreateCommand,
 };
 
@@ -32,6 +32,7 @@ impl<'a> BouncerCommand<'a> for Command {
                 .add_string_choice("ID", "id")
                 .required(true),
             )
+            .default_member_permissions(Permissions::MANAGE_ROLES)
     }
 
     async fn execute(
