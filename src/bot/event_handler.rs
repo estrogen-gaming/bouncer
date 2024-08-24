@@ -4,8 +4,7 @@ use serenity::all::{Context, EventHandler, Interaction, Message, Ready};
 use tokio::sync::RwLock;
 use tokio::time::{self, Duration};
 
-use crate::bot::commands::register_commands;
-use crate::bot::context::BouncerContext;
+use crate::bot::{commands::register_commands, context::BouncerContext, database};
 use crate::macros;
 
 use super::commands::run_command;
@@ -60,63 +59,42 @@ impl EventHandler for BouncerEventHandler {
 
     async fn message(&self, context: Context, message: Message) {
         let state = self.state.read().await;
-
         if !state.context.is_populated() {
             warn!("context is not populated yet, ignoring messages until its populated...");
             return;
         }
 
-        let (guild, channel, member) = {
-            let guild_id = message.guild_id;
-            let partial_member = message.member.as_ref();
-
-            // If there's no guild or guild member (message in DMs)
-            // ignore it.
-            if guild_id.is_none() || partial_member.is_none() {
-                debug!("message is not from a guild or a guild member (DMs), ignoring...");
-                return;
-            }
-
-            let guild = if let Some(guild) = guild_id.unwrap().to_guild_cached(&context.cache) {
-                guild.to_owned()
-            } else {
-                error!("failed to fetch guild from cache");
-                return;
-            };
-            let channel = match message.channel(&context.http).await {
-                Ok(channel) => channel.guild().unwrap(),
-                Err(error) => {
-                    error!("failed to fetch channel: {error:#?}");
-                    return;
-                }
-            };
-            let member = match message.member(&context.http).await {
-                Ok(member) => member,
-                Err(error) => {
-                    error!("failed to fetch member: {error:#?}");
-                    return;
-                }
-            };
-
-            (guild, channel, member)
+        let message_guild = if let Some(message_guild) = message.guild(&context.cache) {
+            message_guild.to_owned()
+        } else {
+            error!("could not fetch the guild, skipping...");
+            return;
+        };
+        let Ok(message_channel) = message.guild_channel(&context.http).await else {
+            error!("could not find the channel, skipping...");
+            return;
+        };
+        let Ok(message_member) = message.member(&context.http).await else {
+            error!("could not fetch the message member, skipping...");
+            return;
         };
 
-        if guild.id != state.context.guild.id {
-            debug!("message is not from the specified guild, ignoring...");
+        if message_guild.owner_id == message_member.user.id {
+            debug!("message is from the guild owner, ignoring...");
             return;
         }
 
-        if !channel.nsfw {
-            debug!("message is not in an NSFW channel, ignoring...");
+        if !message_channel.nsfw {
+            debug!("message is not from an NSFW channel, ignoring...");
             return;
         }
 
-        if member.user.bot() {
-            debug!("message is from a bot, ignoring...");
+        if message_member.user.bot() {
+            debug!("message from a bot, ignoring...");
             return;
         }
 
-        if member.roles.iter().any(|role_id| {
+        if message_member.roles.iter().any(|role_id| {
             state
                 .context
                 .roles
@@ -126,17 +104,47 @@ impl EventHandler for BouncerEventHandler {
         }) {
             debug!("message is from an interviewer, ignoring...");
             return;
-        } else if member.roles.iter().all(|role_id| {
-            role_id == &state.context.roles.text_verified.id
-                || role_id == &state.context.roles.id_verified.id
-        }) {
-            debug!("message is not from an already interviewed user, ignoring...");
+        }
+
+        let Ok(user_status) = sqlx::query!("SELECT status FROM users")
+            .fetch_optional(&state.database)
+            .await
+        else {
+            error!(
+                "could not read the user data of `{}`, skipping...",
+                message_member.user.id
+            );
+            return;
+        };
+        if user_status.is_some() {
+            debug!("this user is in the database records already, skipping...");
             return;
         }
 
-        //* To make clippy happy. Gives `clippy::significant-drop-tightening`
-        //* warning otherwise.
-        drop(state);
+        let user_id = i64::try_from(message_member.user.id.get())
+            .expect("failed to convert user ID from u64 to i64");
+        match sqlx::query_as!(
+            User,
+            "INSERT INTO users(user_id, status) VALUES(?, ?)",
+            user_id,
+            database::UserStatus::Pending
+        )
+        .execute(&state.database)
+        .await
+        {
+            Ok(_) => {
+                info!(
+                    "added a new user `{}` to the database with status `pending`",
+                    message_member.user.id
+                );
+            }
+            Err(error) => {
+                error!(
+                    "failed to add a new user `{}` to the database: {error}",
+                    message_member.user.id
+                );
+            }
+        }
     }
 
     async fn cache_ready(&self, context: Context, _guilds: Vec<serenity::model::id::GuildId>) {
