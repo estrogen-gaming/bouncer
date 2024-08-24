@@ -28,7 +28,6 @@ pub struct Roles {
 }
 
 impl BouncerContext {
-    // TODO: Look into this for usin `Result` instead of `Option`.
     #[allow(clippy::cognitive_complexity)]
     pub fn try_populate(
         context: &Context,

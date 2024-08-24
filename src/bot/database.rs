@@ -33,6 +33,15 @@ pub enum InterviewType {
     ID,
 }
 
+impl std::fmt::Display for InterviewType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            &InterviewType::Text => write!(f, "text"),
+            &InterviewType::ID => write!(f, "id"),
+        }
+    }
+}
+
 #[derive(FromRow, Debug)]
 pub struct User {
     pub user_id: i64,
