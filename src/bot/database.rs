@@ -15,10 +15,10 @@ pub enum UserStatus {
 impl From<String> for UserStatus {
     fn from(value: String) -> Self {
         match value.as_str() {
-            "pending" => UserStatus::Pending,
-            "ongoing" => UserStatus::Ongoing,
-            "approved" => UserStatus::Approved,
-            "rejected" => UserStatus::Rejected,
+            "pending" => Self::Pending,
+            "ongoing" => Self::Ongoing,
+            "approved" => Self::Approved,
+            "rejected" => Self::Rejected,
             _ => unreachable!(),
         }
     }
