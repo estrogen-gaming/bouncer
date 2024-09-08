@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use serenity::all::{Context, CreateCommand, Guild};
 use tokio::sync::RwLock;
+use tracing::{error, info, trace};
 
 use super::{helpers::interaction_context::CommandInteractionContext, BouncerState};
 

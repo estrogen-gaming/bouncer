@@ -1,6 +1,6 @@
 use std::{io, path::PathBuf};
 
-use tracing::{Level, Metadata};
+use tracing::{trace, Level, Metadata};
 use tracing_subscriber::{
     fmt::{self, MakeWriter},
     layer::SubscriberExt,

@@ -3,13 +3,20 @@ use std::sync::Arc;
 use serenity::all::{Context, EventHandler, Interaction, Member, Message, MessageType, Ready};
 use tokio::sync::RwLock;
 use tokio::time::{self, Duration};
-
-use crate::bot::{commands::register_commands, context::BouncerContext, database};
-use crate::config;
-use crate::macros;
+use tracing::{debug, error, info, trace, warn};
 
 use super::commands::run_command;
 use super::helpers::interaction_context::CommandInteractionContext;
+
+use crate::bot::{commands::register_commands, context::BouncerContext, database};
+use crate::config;
+
+macro_rules! error_exit {
+    ($($arg:tt)*) => {
+        error!($($arg)*);
+        std::process::exit(1);
+    };
+}
 
 pub struct BouncerEventHandler {
     pub discord_config: config::Discord,
@@ -18,40 +25,52 @@ pub struct BouncerEventHandler {
 
 #[serenity::async_trait]
 impl EventHandler for BouncerEventHandler {
-    async fn ready(&self, context: Context, ready: Ready) {
-        info!(
-            "bot is connected to Discord and ready to serve as `{}`",
-            ready.user.name
-        );
+    async fn cache_ready(&self, context: Context, _guilds: Vec<serenity::model::id::GuildId>) {
+        trace!("running the `cache_ready` event handler...");
 
-        let mut counter = 1;
-        while !self.state.read().await.context.is_populated() {
-            trace!("waiting for context to be populated (try {counter})...");
-
-            if counter >= 10 {
-                macros::error_exit!("context is not populated within 10 seconds. stopping...");
+        match BouncerContext::try_populate(&context, &self.discord_config) {
+            Ok(context) => self.state.write().await.context = context,
+            Err(error) => {
+                error_exit!("failed to populate context, stopping... ({error})");
             }
-
-            time::sleep(Duration::from_millis(1000)).await;
-            counter += 1;
         }
 
-        register_commands(&self.state.read().await.context.guild, &context).await;
+        trace!("ran the `cache_ready` event handler");
     }
 
-    async fn interaction_create(&self, context: Context, interaction: Interaction) {
-        if let Interaction::Command(command_interaction) = interaction {
-            let interaction_context = CommandInteractionContext {
-                context: &context,
-                interaction: &command_interaction,
-                options: &command_interaction.data.options(),
-            };
+    async fn guild_member_addition(&self, context: Context, member: Member) {
+        let state = self.state.read().await;
 
-            if let Err(error) = run_command(interaction_context, self.state.clone()).await {
-                error!(
-                    "an error occurred while running `{interaction_name}` command interaction: {error:#?}",
-                    interaction_name = command_interaction.data.name
-                );
+        let user_id =
+            i64::try_from(member.user.id.get()).expect("failed to convert user ID from u64 to i64");
+        match sqlx::query!(
+            "SELECT user_id, type FROM interviews WHERE user_id = ?",
+            user_id
+        )
+        .fetch_optional(&state.database)
+        .await
+        {
+            Ok(Some(user)) => {
+                if let Err(error) = member
+                    .add_role(
+                        &context.http,
+                        if user.r#type == database::InterviewType::Text.to_string() {
+                            state.context.roles.text_verified.id
+                        } else {
+                            state.context.roles.id_verified.id
+                        },
+                        Some("Was previously interviewed."),
+                    )
+                    .await
+                {
+                    error!("an unexpected error occurred while adding roles back to a member: {error:#?}");
+                }
+            }
+            Ok(None) => {
+                info!("joined member `{user_id}` is new, no roles to give back");
+            }
+            Err(error) => {
+                error!("database query error: {error}");
             }
         }
     }
@@ -157,53 +176,41 @@ impl EventHandler for BouncerEventHandler {
         }
     }
 
-    async fn guild_member_addition(&self, context: Context, member: Member) {
-        let state = self.state.read().await;
+    async fn ready(&self, context: Context, ready: Ready) {
+        info!(
+            "bot is connected to Discord and ready to serve as `{}`",
+            ready.user.name
+        );
 
-        let user_id =
-            i64::try_from(member.user.id.get()).expect("failed to convert user ID from u64 to i64");
-        match sqlx::query!(
-            "SELECT user_id, type FROM interviews WHERE user_id = ?",
-            user_id
-        )
-        .fetch_optional(&state.database)
-        .await
-        {
-            Ok(Some(user)) => {
-                if let Err(error) = member
-                    .add_role(
-                        &context.http,
-                        if user.r#type == database::InterviewType::Text.to_string() {
-                            state.context.roles.text_verified.id
-                        } else {
-                            state.context.roles.id_verified.id
-                        },
-                        Some("Was previously interviewed."),
-                    )
-                    .await
-                {
-                    error!("an unexpected error occurred while adding roles back to a member: {error:#?}");
-                }
+        let mut counter = 1;
+        while !self.state.read().await.context.is_populated() {
+            trace!("waiting for context to be populated (try {counter})...");
+
+            if counter >= 10 {
+                macros::error_exit!("context is not populated within 10 seconds. stopping...");
             }
-            Ok(None) => {
-                info!("joined member `{user_id}` is new, no roles to give back");
-            }
-            Err(error) => {
-                error!("database query error: {error}");
-            }
+
+            time::sleep(Duration::from_millis(1000)).await;
+            counter += 1;
         }
+
+        register_commands(&self.state.read().await.context.guild, &context).await;
     }
 
-    async fn cache_ready(&self, context: Context, _guilds: Vec<serenity::model::id::GuildId>) {
-        trace!("running the `cache_ready` event handler...");
+    async fn interaction_create(&self, context: Context, interaction: Interaction) {
+        if let Interaction::Command(command_interaction) = interaction {
+            let interaction_context = CommandInteractionContext {
+                context: &context,
+                interaction: &command_interaction,
+                options: &command_interaction.data.options(),
+            };
 
-        match BouncerContext::try_populate(&context, &self.discord_config) {
-            Ok(context) => self.state.write().await.context = context,
-            Err(error) => {
-                macros::error_exit!("failed to populate context, stopping... ({error})");
+            if let Err(error) = run_command(interaction_context, self.state.clone()).await {
+                error!(
+                    "an error occurred while running `{interaction_name}` command interaction: {error:#?}",
+                    interaction_name = command_interaction.data.name
+                );
             }
         }
-
-        trace!("ran the `cache_ready` event handler");
     }
 }

@@ -3,6 +3,7 @@ use std::sync::Arc;
 use serenity::{all::GatewayIntents, Client};
 use sqlx::SqlitePool;
 use tokio::sync::RwLock;
+use tracing::trace;
 
 use crate::config;
 

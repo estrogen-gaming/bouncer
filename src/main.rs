@@ -8,11 +8,7 @@ use sqlx::SqlitePool;
 mod bot;
 mod cli;
 mod config;
-mod macros;
 mod utils;
-
-#[macro_use]
-extern crate tracing;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

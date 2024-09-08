@@ -1,12 +1,13 @@
 use chrono::{format::ParseErrorKind, Datelike, NaiveDate, Utc};
 use serenity::all::{CommandOptionType, CreateCommand, CreateCommandOption};
+use tracing::error;
+
+use super::BouncerCommand;
 
 use crate::bot::{
     extensions::resolved_options::ResolvedOptionExt,
     helpers::interaction_context::CommandInteractionContext, BouncerState,
 };
-
-use super::BouncerCommand;
 
 pub struct Command;
 impl<'a> BouncerCommand<'a> for Command {

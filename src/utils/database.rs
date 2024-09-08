@@ -1,6 +1,7 @@
 use std::path::PathBuf;
 
 use tokio::fs;
+use tracing::trace;
 
 pub async fn set_up(database_path: &PathBuf) -> anyhow::Result<()> {
     trace!("setting up the database folder...");

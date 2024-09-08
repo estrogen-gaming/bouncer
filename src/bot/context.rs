@@ -1,4 +1,5 @@
 use serenity::all::{Context, Guild, GuildChannel, Role};
+use tracing::trace;
 
 use crate::config;
 
