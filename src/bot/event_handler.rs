@@ -187,7 +187,7 @@ impl EventHandler for BouncerEventHandler {
             trace!("waiting for context to be populated (try {counter})...");
 
             if counter >= 10 {
-                macros::error_exit!("context is not populated within 10 seconds. stopping...");
+                error_exit!("context is not populated within 10 seconds. stopping...");
             }
 
             time::sleep(Duration::from_millis(1000)).await;
