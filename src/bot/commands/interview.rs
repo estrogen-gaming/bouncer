@@ -13,7 +13,7 @@ use super::BouncerCommand;
 pub struct Command;
 impl<'a> BouncerCommand<'a> for Command {
     const COMMAND_NAME: &'a str = "interview";
-    const COMMAND_DESCRIPTION: &'a str = "Interview an user.";
+    const COMMAND_DESCRIPTION: &'a str = "Interview a user.";
 
     fn command() -> CreateCommand<'a> {
         CreateCommand::new(Self::COMMAND_NAME)
@@ -39,28 +39,22 @@ impl<'a> BouncerCommand<'a> for Command {
         interaction_context: CommandInteractionContext<'_>,
         state: &BouncerState,
     ) -> anyhow::Result<()> {
-        let Some((user, member)) = interaction_context.options.get_user_and_member(0) else {
-            interaction_context
-                .reply_string("User not found.", Some(true))
-                .await?;
-            return Ok(());
+        let (user, member) = match interaction_context.options.get_user_and_member(0) {
+            Some((user, Some(member))) => (user, member),
+            Some((_, None)) => {
+                interaction_context
+                    .reply_string("This user does not seem to be a member of the server.", Some(true))
+                    .await?;
+                return Ok(());
+            }
+            None => unreachable!("The user option is required."),
         };
-        let Some(member) = member else {
-            interaction_context
-                .reply_string(
-                    "This user does not seem to be a member of the server.",
-                    Some(true),
-                )
-                .await?;
-            return Ok(());
-        };
-        let Some(interview_type) = interaction_context.options.get_string_option("type") else {
-            interaction_context
-                .reply_string("Please enter the type of the interview.", Some(true))
-                .await?;
-            return Ok(());
+        let interview_type = match interaction_context.options.get_string_option("type") {
+            Some(interview_type) => interview_type,
+            None => unreachable!("The type option is required."),
         };
 
+        // TODO: Create a helper function for those.
         if user.bot() {
             interaction_context
                 .reply_string("You cannot interview a bot.", Some(true))
@@ -76,7 +70,7 @@ impl<'a> BouncerCommand<'a> for Command {
             .roles
             .interviewers
             .iter()
-            .any(|interviewer_role| member.roles.contains(&interviewer_role.id))
+            .any(|role| member.roles.contains(&role.id))
         {
             interaction_context
                 .reply_string("You cannot interview an interviewer.", Some(true))

@@ -122,7 +122,7 @@ impl EventHandler for BouncerEventHandler {
             return;
         }
         if message_member.user.bot() {
-            debug!("message from a bot, ignoring...");
+            debug!("message is from a bot, ignoring...");
             return;
         }
         if message_member.roles.iter().any(|role_id| {
@@ -162,16 +162,17 @@ impl EventHandler for BouncerEventHandler {
         .await
         {
             Ok(_) => {
-                info!(
+                debug!(
                     "added a new user `{}` to the database with status `pending`",
                     message_member.user.id
                 );
             }
             Err(error) => {
                 error!(
-                    "failed to add a new user `{}` to the database: {error}",
+                    "failed to insert a new user `{}` into the `users` table: {error}",
                     message_member.user.id
                 );
+                return;
             }
         }
     }
