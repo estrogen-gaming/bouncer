@@ -72,7 +72,7 @@ impl<'a> BouncerCommand<'a> for Command {
         }
 
         interaction_context
-            .reply_string(format!("{age} years old."), Some(true))
+            .reply_string(format!("{age}"), Some(true))
             .await?;
 
         Ok(())
